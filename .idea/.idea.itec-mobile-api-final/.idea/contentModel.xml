@@ -5,7 +5,6 @@
     <e p="C:\Users\Dan PERCIC\.Rider2019.2\system\resharper-host\local\Transient\ReSharperHost\v192\SolutionCaches\_itec-mobile-api-final.1770553677.00" t="ExcludeRecursive" />
     <e p="E:\Repo\itec-mobile-api-final" t="IncludeRecursive">
       <e p=".gitignore" t="Include" />
-      <e p="app.db" t="Include" />
       <e p="appsettings.Development.json" t="Include" />
       <e p="appsettings.json" t="Include" />
       <e p="Areas" t="Include">
@@ -16,16 +15,25 @@
         </e>
       </e>
       <e p="bin" t="ExcludeRecursive" />
+      <e p="conf.vars" t="Include" />
       <e p="Controllers" t="Include">
+        <e p="ExampleController.cs" t="Include" />
         <e p="HomeController.cs" t="Include" />
       </e>
       <e p="Data" t="Include">
         <e p="ApplicationDbContext.cs" t="Include" />
+        <e p="ExampleContext.cs" t="Include" />
         <e p="Migrations" t="Include">
           <e p="00000000000000_CreateIdentitySchema.cs" t="Include" />
           <e p="00000000000000_CreateIdentitySchema.Designer.cs" t="Include" />
           <e p="ApplicationDbContextModelSnapshot.cs" t="Include" />
         </e>
+      </e>
+      <e p="Entities" t="Include">
+        <e p="ExampleEntity.cs" t="Include" />
+      </e>
+      <e p="Helpers" t="Include">
+        <e p="EnvVarManager.cs" t="Include" />
       </e>
       <e p="itec-mobile-api-final.csproj" t="IncludeRecursive" />
       <e p="itec-mobile-api-final.sln" t="IncludeFlat" />
@@ -44,6 +52,8 @@
       <e p="Properties" t="Include">
         <e p="launchSettings.json" t="Include" />
       </e>
+      <e p="run.bat" t="Include" />
+      <e p="set-env-var.bat" t="Include" />
       <e p="Startup.cs" t="Include" />
       <e p="Views" t="Include">
         <e p="_ViewImports.cshtml" t="Include" />

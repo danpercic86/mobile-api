@@ -11,8 +11,10 @@ using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using itec_mobile_api_final.Data;
+using itec_mobile_api_final.Helpers;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.OpenApi.Models;
 
 namespace itec_mobile_api_final
 {
@@ -28,19 +30,26 @@ namespace itec_mobile_api_final
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            var connectionString =
+                $"server={EnvVarManager.GetOrThrow("DB_SERVER")};" +
+                $"port={EnvVarManager.GetOrThrow("DB_PORT")};" +
+                $"database={EnvVarManager.GetOrThrow("DB_DATABASE")};" +
+                $"uid={EnvVarManager.GetOrThrow("DB_USER")};" +
+                $"password={EnvVarManager.Get("DB_PASSWORD")}";
+            
             services.Configure<CookiePolicyOptions>(options =>
             {
                 // This lambda determines whether user consent for non-essential cookies is needed for a given request.
                 options.CheckConsentNeeded = context => true;
                 options.MinimumSameSitePolicy = SameSiteMode.None;
             });
-
-            services.AddDbContext<ApplicationDbContext>(options =>
-                options.UseSqlite(
-                    Configuration.GetConnectionString("DefaultConnection")));
+            
+            services.AddDbContext<ExampleContext>(op => op.UseSqlServer(Configuration["ConnectionString:mobile-api"]));
             services.AddDefaultIdentity<IdentityUser>()
                 .AddDefaultUI(UIFramework.Bootstrap4)
                 .AddEntityFrameworkStores<ApplicationDbContext>();
+            services.AddSwaggerGen(c=> { c.SwaggerDoc("v1", new OpenApiInfo{ Title = "iTEC Mobile API", Version = "v1.0"});  
+            });   
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
         }
@@ -65,6 +74,10 @@ namespace itec_mobile_api_final
             app.UseCookiePolicy();
 
             app.UseAuthentication();
+            app.UseSwagger();  
+            app.UseSwaggerUI(c=> {  
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "post API V1");  
+            });
 
             app.UseMvc(routes =>
             {
