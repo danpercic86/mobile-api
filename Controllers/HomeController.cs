@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
+using itec_mobile_api_final.Data;
 using Microsoft.AspNetCore.Mvc;
 using itec_mobile_api_final.Models;
 
@@ -10,6 +11,12 @@ namespace itec_mobile_api_final.Controllers
 {
     public class HomeController : Controller
     {
+        private ExampleContext exampleContext;
+
+        public HomeController(ExampleContext ec)
+        {
+            exampleContext = ec;
+        }
         public IActionResult Index()
         {
             return View();
@@ -25,5 +32,7 @@ namespace itec_mobile_api_final.Controllers
         {
             return View(new ErrorViewModel {RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier});
         }
+        
+        
     }
 }
