@@ -7,19 +7,10 @@
         <RootNamespace>itec_mobile_api_final</RootNamespace>
     </PropertyGroup>
 
-
     <ItemGroup>
-        <None Update="app.db" CopyToOutputDirectory="PreserveNewest" />
-    </ItemGroup>
-
-    <ItemGroup>
-        <PackageReference Include="EntityFramework" Version="6.4.0-preview1-19506-01" />
         <PackageReference Include="Microsoft.AspNetCore.App" />
         <PackageReference Include="Microsoft.AspNetCore.Razor.Design" Version="2.2.0" PrivateAssets="All" />
-        <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="2.2.2" />
-        <PackageReference Include="MySql.Data" Version="8.0.18" />
-        <PackageReference Include="MySql.Data.EntityFramework" Version="8.0.18" />
-        <PackageReference Include="MySql.Data.EntityFrameworkCore" Version="8.0.18" />
+        <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="2.2.6" />
     </ItemGroup>
 
 </Project>

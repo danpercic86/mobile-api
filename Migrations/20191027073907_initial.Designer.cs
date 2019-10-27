@@ -9,14 +9,15 @@ using itec_mobile_api_final.Data;
 namespace itec_mobile_api_final.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20191026202829_initial")]
+    [Migration("20191027073907_initial")]
     partial class initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "2.2.2-servicing-10034");
+                .HasAnnotation("ProductVersion", "2.2.6-servicing-10079")
+                .HasAnnotation("Relational:MaxIdentifierLength", 64);
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
                 {
