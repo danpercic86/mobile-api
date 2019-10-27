@@ -11,11 +11,8 @@ namespace itec_mobile_api_final.Controllers
 {
     public class HomeController : Controller
     {
-        private ExampleContext exampleContext;
-
-        public HomeController(ExampleContext ec)
+        public HomeController()
         {
-            exampleContext = ec;
         }
         public IActionResult Index()
         {

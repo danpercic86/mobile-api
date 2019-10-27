@@ -6,10 +6,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace itec_mobile_api_final.Entities
 {
     [Table("Example",Schema ="dbo")]  
-    public class ExampleEntity  
-    {  
-        [Key]  
-      
-        public Guid ExampleId { get; set; }
+    public class ExampleEntity : Entity
+    {
     } 
 }

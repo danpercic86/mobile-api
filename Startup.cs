@@ -39,19 +39,16 @@ namespace itec_mobile_api_final
                 options.MinimumSameSitePolicy = SameSiteMode.None;
             });
             
-            services.AddDbContext<ExampleContext>(op => op.UseSqlServer(Configuration["ConnectionString:mobile-api"]));
-                options.UseMySql(
-                    Configuration.GetConnectionString("DefaultConnection")));
+            services.AddDbContext<ApplicationDbContext>(op => op.UseMySql(connectionString));
             services.AddDefaultIdentity<IdentityUser>()
                 .AddDefaultUI(UIFramework.Bootstrap4)
                 .AddEntityFrameworkStores<ApplicationDbContext>();
-            services.AddSwaggerGen(c=> { c.SwaggerDoc("v1", new OpenApiInfo{ Title = "iTEC Mobile API", Version = "v1.0"});  
+            
+            services.AddSwaggerGen(c=> { c.SwaggerDoc("v1", new OpenApiInfo{ Title = "iTEC Mobile API", Version = "v1.0"});
             });   
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
             services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
-            services.AddDbContext<ExampleContext>(options =>
-                options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

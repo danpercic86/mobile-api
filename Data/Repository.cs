@@ -9,11 +9,11 @@ namespace itec_mobile_api_final.Data
         protected readonly DbContext Context;
         protected DbSet<T> DbSet;
 
-        public Repository(ExampleContext context)
-        {
-            Context = context;
-            DbSet = Context.Set<T>();
-        }
+//        public Repository(<T> context)
+//        {
+//            Context = context;
+//            DbSet = Context.Set<T>();
+//        }
 
         public T Get<TKey>(TKey id)
         {
