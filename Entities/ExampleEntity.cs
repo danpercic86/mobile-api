@@ -1,11 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
+﻿using System.ComponentModel.DataAnnotations.Schema;
 
 namespace itec_mobile_api_final.Entities
 {
-    [Table("Example",Schema ="dbo")]  
+    [Table("Example",Schema ="mobile-api")]  
     public class ExampleEntity : Entity
     {
     } 
