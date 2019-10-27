@@ -38,10 +38,15 @@ namespace itec_mobile_api_final
                 options.CheckConsentNeeded = context => true;
                 options.MinimumSameSitePolicy = SameSiteMode.None;
             });
+<<<<<<< HEAD
             
             services.AddDbContext<ExampleContext>(op => op.UseSqlServer(Configuration["ConnectionString:mobile-api"]));
+=======
+
+            services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseMySql(
                     Configuration.GetConnectionString("DefaultConnection")));
+>>>>>>> percic
             services.AddDefaultIdentity<IdentityUser>()
                 .AddDefaultUI(UIFramework.Bootstrap4)
                 .AddEntityFrameworkStores<ApplicationDbContext>();
