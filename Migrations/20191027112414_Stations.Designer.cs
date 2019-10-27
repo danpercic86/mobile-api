@@ -2,15 +2,17 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using itec_mobile_api_final.Data;
 
 namespace itec_mobile_api_final.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20191027112414_Stations")]
+    partial class Stations
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -187,7 +189,7 @@ namespace itec_mobile_api_final.Migrations
 
                     b.Property<int>("State");
 
-                    b.Property<string>("StationId");
+                    b.Property<string>("StationEntityId");
 
                     b.Property<int>("Type");
 
@@ -195,9 +197,9 @@ namespace itec_mobile_api_final.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("StationId");
+                    b.HasIndex("StationEntityId");
 
-                    b.ToTable("Sockets","mobile-api");
+                    b.ToTable("SocketsEntity");
                 });
 
             modelBuilder.Entity("itec_mobile_api_final.Stations.StationEntity", b =>
@@ -213,7 +215,7 @@ namespace itec_mobile_api_final.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Stations","mobile-api");
+                    b.ToTable("Stations","dbo");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -263,10 +265,9 @@ namespace itec_mobile_api_final.Migrations
 
             modelBuilder.Entity("itec_mobile_api_final.Sockets.SocketsEntity", b =>
                 {
-                    b.HasOne("itec_mobile_api_final.Stations.StationEntity", "Station")
+                    b.HasOne("itec_mobile_api_final.Stations.StationEntity")
                         .WithMany("Sockets")
-                        .HasForeignKey("StationId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .HasForeignKey("StationEntityId");
                 });
 #pragma warning restore 612, 618
         }

@@ -9,8 +9,8 @@ using itec_mobile_api_final.Data;
 namespace itec_mobile_api_final.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20191027073907_initial")]
-    partial class initial
+    [Migration("20191027165748_fix_station")]
+    partial class fix_station
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -178,6 +178,22 @@ namespace itec_mobile_api_final.Migrations
                     b.HasKey("UserId", "LoginProvider", "Name");
 
                     b.ToTable("AspNetUserTokens");
+                });
+
+            modelBuilder.Entity("itec_mobile_api_final.Stations.StationEntity", b =>
+                {
+                    b.Property<string>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<DateTime>("Created");
+
+                    b.Property<string>("Name");
+
+                    b.Property<DateTime>("Updated");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Stations","mobile-api");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
