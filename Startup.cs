@@ -13,6 +13,7 @@ using Microsoft.EntityFrameworkCore;
 using itec_mobile_api_final.Data;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.EntityFrameworkCore;
 
 namespace itec_mobile_api_final
 {
@@ -36,7 +37,7 @@ namespace itec_mobile_api_final
             });
 
             services.AddDbContext<ApplicationDbContext>(options =>
-                options.UseSqlite(
+                options.UseMySQL(
                     Configuration.GetConnectionString("DefaultConnection")));
             services.AddDefaultIdentity<IdentityUser>()
                 .AddDefaultUI(UIFramework.Bootstrap4)

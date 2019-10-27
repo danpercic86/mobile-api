@@ -21,14 +21,17 @@
       </e>
       <e p="Data" t="Include">
         <e p="ApplicationDbContext.cs" t="Include" />
-        <e p="Migrations" t="Include">
-          <e p="00000000000000_CreateIdentitySchema.cs" t="Include" />
-          <e p="00000000000000_CreateIdentitySchema.Designer.cs" t="Include" />
-          <e p="ApplicationDbContextModelSnapshot.cs" t="Include" />
+        <e p="User" t="Include">
+          <e p="UserIdentity.cs" t="Include" />
         </e>
       </e>
       <e p="itec-mobile-api-final.csproj" t="IncludeRecursive" />
       <e p="itec-mobile-api-final.sln" t="IncludeFlat" />
+      <e p="Migrations" t="Include">
+        <e p="20191026202829_initial.cs" t="Include" />
+        <e p="20191026202829_initial.Designer.cs" t="Include" />
+        <e p="ApplicationDbContextModelSnapshot.cs" t="Include" />
+      </e>
       <e p="Models" t="Include">
         <e p="ErrorViewModel.cs" t="Include" />
       </e>
