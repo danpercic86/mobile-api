@@ -2,6 +2,8 @@
 {
     public enum SocketEnum
     {
-        
+        TypeOneCharger,
+        TypeTwoCharger,
+        TeslaSupercharger
     }
 }

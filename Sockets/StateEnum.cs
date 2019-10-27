@@ -2,6 +2,8 @@
 {
     public enum StateEnum
     {
-        
+        Free,
+        Taken,
+        NotWorking
     }
 }
