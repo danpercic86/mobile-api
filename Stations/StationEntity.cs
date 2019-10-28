@@ -3,6 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.Drawing;
 using itec_mobile_api_final.Entities;
 using itec_mobile_api_final.Sockets;
+using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 using Microsoft.CodeAnalysis;
 using Newtonsoft.Json;
 
@@ -14,13 +15,13 @@ namespace itec_mobile_api_final.Stations
         public string Name { get; set; }
         [JsonIgnore]
         public List<SocketsEntity> Sockets { get; set; }
-        public Location Location { get; set; }
-    }
-    
-    [NotMapped]
-    public class Location
-    {
-        public decimal X { get; set; }
-        public decimal Y { get; set; }
+        [JsonIgnore]
+        public string LocationStr { get; set; }
+        [NotMapped]
+        public PointF Location
+        {
+            get => JsonConvert.DeserializeObject<PointF>(LocationStr);
+            set => LocationStr = JsonConvert.SerializeObject(value);
+        }
     }
 }
