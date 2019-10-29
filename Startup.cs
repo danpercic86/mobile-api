@@ -9,6 +9,7 @@ using Microsoft.EntityFrameworkCore;
 using itec_mobile_api_final.Data;
 using itec_mobile_api_final.Helpers;
 using itec_mobile_api_final.Options;
+using itec_mobile_api_final.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -97,6 +98,7 @@ namespace itec_mobile_api_final
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
             services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
+            services.AddScoped<IIdentityService, IdentityService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
