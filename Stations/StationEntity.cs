@@ -1,10 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Drawing;
 using itec_mobile_api_final.Entities;
 using itec_mobile_api_final.Sockets;
-using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
-using Microsoft.CodeAnalysis;
 using Newtonsoft.Json;
 
 namespace itec_mobile_api_final.Stations

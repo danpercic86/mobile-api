@@ -9,8 +9,8 @@ using itec_mobile_api_final.Data;
 namespace itec_mobile_api_final.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20191027214357_updated_location")]
-    partial class updated_location
+    [Migration("20191028234100_initial")]
+    partial class initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -185,15 +185,11 @@ namespace itec_mobile_api_final.Migrations
                     b.Property<string>("Id")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<DateTime>("Created");
-
                     b.Property<int>("State");
 
                     b.Property<string>("StationId");
 
                     b.Property<int>("Type");
-
-                    b.Property<DateTime>("Updated");
 
                     b.HasKey("Id");
 
@@ -207,13 +203,9 @@ namespace itec_mobile_api_final.Migrations
                     b.Property<string>("Id")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<DateTime>("Created");
-
                     b.Property<string>("LocationStr");
 
                     b.Property<string>("Name");
-
-                    b.Property<DateTime>("Updated");
 
                     b.HasKey("Id");
 
