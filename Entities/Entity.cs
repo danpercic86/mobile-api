@@ -9,9 +9,5 @@ namespace itec_mobile_api_final.Entities
     {
         [Key]
         [ReadOnly(true)] public string Id { get; set; }
-
-        [ReadOnly(true)] public DateTime Created { get; set; }
-
-        [ReadOnly(true)] public DateTime Updated { get; set; }
     }
 }

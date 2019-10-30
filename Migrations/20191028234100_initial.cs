@@ -56,9 +56,8 @@ namespace itec_mobile_api_final.Migrations
                 columns: table => new
                 {
                     Id = table.Column<string>(nullable: false),
-                    Created = table.Column<DateTime>(nullable: false),
-                    Updated = table.Column<DateTime>(nullable: false),
-                    Name = table.Column<string>(nullable: true)
+                    Name = table.Column<string>(nullable: true),
+                    LocationStr = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
                 {
@@ -177,8 +176,6 @@ namespace itec_mobile_api_final.Migrations
                 columns: table => new
                 {
                     Id = table.Column<string>(nullable: false),
-                    Created = table.Column<DateTime>(nullable: false),
-                    Updated = table.Column<DateTime>(nullable: false),
                     Type = table.Column<int>(nullable: false),
                     State = table.Column<int>(nullable: false),
                     StationId = table.Column<string>(nullable: true)

@@ -46,14 +46,14 @@ namespace itec_mobile_api_final.Stations
         }
 
         [HttpPost]
-        public ActionResult<StationEntity> Post(StationEntity station)
+        public ActionResult<StationEntity> Post([FromBody]StationEntity station)
         {
             _stationRepo.Add(station);
 
             return CreatedAtAction(nameof(GetOne), new {id = station.Id}, station);
         }
 
-        [HttpDelete]
+        [HttpDelete("{id}")]
         public ActionResult<StationEntity> Delete(string id)
         {
             var station = _stationRepo.Get(id);
@@ -66,6 +66,23 @@ namespace itec_mobile_api_final.Stations
             return Ok("Station deleted!");
         }
 
+        [HttpPatch("{id}")]
+        public ActionResult<StationEntity> Update(StationEntity stationEntity, [FromRoute]string id)
+        {
+            var existing = _stationRepo.Get(id);
+            if (existing == null)
+            {
+                return NotFound();
+            }
+
+            existing.Name = stationEntity.Name;
+            existing.Location = stationEntity.Location;
+            
+            _stationRepo.Update(existing);
+            
+            return existing;
+        }
+        
         [HttpGet("{id}/GetSockets")]
         public IQueryable<SocketsEntity> GetAll(string id)
         {
@@ -91,9 +108,7 @@ namespace itec_mobile_api_final.Stations
         public ActionResult<SocketsEntity> Post([FromBody] SocketsEntity socket, [FromRoute] string id)
         {
             _socketRepo.Queryable.Include(s => s.Station);
-            Console.WriteLine("is = " + id);
             socket.Station = _stationRepo.Get(id);
-            Console.WriteLine("isnull" + (socket.Station == null));
 
             _socketRepo.Add(socket);
 
