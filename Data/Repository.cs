@@ -37,7 +37,8 @@ namespace itec_mobile_api_final.Data
 
         public void Update(T entity)
         {
-            Save();
+            DbSet.Update(entity);
+            Context.SaveChanges();
         }
 
         public void Delete(T entity)
