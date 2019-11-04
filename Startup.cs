@@ -116,7 +116,7 @@ namespace itec_mobile_api_final
                 app.UseHsts();
             }
 
-            app.UseHttpsRedirection();
+//            app.UseHttpsRedirection();
             app.UseStaticFiles();
             app.UseCookiePolicy();
 
