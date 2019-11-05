@@ -1,10 +1,8 @@
-using System;
 using System.Linq;
+using System.Threading.Tasks;
 using itec_mobile_api_final.Data;
-using itec_mobile_api_final.Sockets;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Filters;
-using Microsoft.EntityFrameworkCore;
 
 namespace itec_mobile_api_final.Cars
 {
@@ -13,51 +11,49 @@ namespace itec_mobile_api_final.Cars
     public class CarsController : Controller
     {
         private readonly IRepository<CarEntity> _carRepository;
-        private readonly IRepository<SocketsEntity> _socketRepository;
+        private readonly UserManager<IdentityUser> _userManager;
         
-        public CarsController(ApplicationDbContext context)
+        public CarsController(ApplicationDbContext context, UserManager<IdentityUser> userManager)
         {
             _carRepository = context.GetRepository<CarEntity>();
-            _socketRepository = context.GetRepository<SocketsEntity>();
-        }
-
-        public override void OnActionExecuting(ActionExecutingContext context)
-        {
-            base.OnActionExecuting(context);
-            _carRepository.Queryable.Include(s => s.Socket);
+            _userManager = userManager;
         }
 
         [HttpGet]
-        public IQueryable<CarEntity> GetAll()
+        public async Task<IActionResult> GetAll()
         {
-            var cars = _carRepository.GetAll();
-            return cars;
+            var currentUser = await _userManager.GetUserAsync(HttpContext.User);
+            var all = await _carRepository.GetAllAsync();
+            var cars = all.Where(c => c.User == currentUser);
+            return Ok(cars);
         }
 
         [HttpGet("{id}")]
-        public ActionResult<CarEntity> GetOne(string id)
+        public async Task<IActionResult> GetOne(string id)
         {
-            var car = _carRepository.Get(id);
+            var car = await _carRepository.GetAsync(id);
             if (car == null)
             {
                 return NotFound();
             }
 
-            return car;
+            return Ok(car);
         }
 
         [HttpPost]
-        public ActionResult<CarEntity> Post([FromBody]CarEntity car)
+        public async Task<IActionResult> Post([FromBody]CarEntity car)
         {
-            _carRepository.Add(car);
+            var currentUser = await _userManager.GetUserAsync(HttpContext.User);
+            car.User = currentUser;
+            await _carRepository.AddAsync(car);
 
             return CreatedAtAction(nameof(GetOne), new {id = car.Id}, car);
         }
 
         [HttpPatch("{id}")]
-        public ActionResult<CarEntity> Patch(CarEntity car, [FromRoute]string id)
+        public async Task<IActionResult> Patch(CarEntity car, [FromRoute]string id)
         {
-            var existing = _carRepository.Get(id);
+            var existing = await _carRepository.GetAsync(id);
             if (existing == null)
             {
                 return NotFound();
@@ -68,24 +64,22 @@ namespace itec_mobile_api_final.Cars
             existing.Company = car.Company;
             existing.Year = car.Year;
             existing.BatteryLeft = car.BatteryLeft;
-            existing.Socket.State = car.Socket.State;
-            existing.Socket.Type = car.Socket.Type;
             existing.LastTechRevision = car.LastTechRevision;
             
-            _carRepository.Update(existing);
+            await _carRepository.UpdateAsync(existing);
 
-            return existing;
+            return Ok(existing);
         }
 
         [HttpDelete("{id}")]
-        public ActionResult<CarEntity> Delete(string id)
+        public async Task<IActionResult> Delete(string id)
         {
-            var car = _carRepository.Get(id);
+            var car = await _carRepository.GetAsync(id);
             if (car == null)
             {
                 return NotFound();
             }
-            _carRepository.Delete(car);
+            await _carRepository.DeleteAsync(car);
 
             return Ok("Car deleted!");
         }

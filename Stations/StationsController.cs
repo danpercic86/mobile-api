@@ -1,112 +1,77 @@
 ﻿using System.Linq;
+using System.Threading.Tasks;
 using itec_mobile_api_final.Data;
-using itec_mobile_api_final.Sockets;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace itec_mobile_api_final.Stations
 {
     [Route("api/[controller]")]
     [ApiController]
+    //[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class StationsController : Controller
     {
         private readonly IRepository<StationEntity> _stationRepo;
-        private readonly IRepository<SocketsEntity> _socketRepo;
 
         public StationsController(ApplicationDbContext context)
         {
             _stationRepo = context.GetRepository<StationEntity>();
-            _socketRepo = context.GetRepository<SocketsEntity>();
         }
 
         [HttpGet]
-        public IQueryable<StationEntity> GetAll()
+        public async Task<IActionResult> GetAll()
         {
-            var stations = _stationRepo.GetAll();
+            var stations = await _stationRepo.GetAllAsync();
 
-            return stations;
+            return Ok(stations);
         }
 
         [HttpGet("{id}")]
-        public ActionResult<StationEntity> GetOne(string id)
+        public async Task<IActionResult> GetOne(string id)
         {
-            var station = _stationRepo.Get(id);
+            var station = await _stationRepo.GetAsync(id);
             if (station == null)
             {
                 return NotFound();
             }
 
-            return station;
+            return Ok(station);
         }
 
         [HttpPost]
-        public ActionResult<StationEntity> Post([FromBody]StationEntity station)
+        public async Task<IActionResult> Post([FromBody]StationEntity station)
         {
-            _stationRepo.Add(station);
+            await _stationRepo.AddAsync(station);
 
             return CreatedAtAction(nameof(GetOne), new {id = station.Id}, station);
         }
 
         [HttpDelete("{id}")]
-        public ActionResult<StationEntity> Delete(string id)
+        public async Task<IActionResult> Delete(string id)
         {
-            var station = _stationRepo.Get(id);
+            var station = await _stationRepo.GetAsync(id);
             if (station == null)
             {
                 return NotFound();
             }
 
-            _stationRepo.Delete(station);
+            await _stationRepo.DeleteAsync(station);
             return Ok("Station deleted!");
         }
 
         [HttpPatch("{id}")]
-        public ActionResult<StationEntity> Update(StationEntity stationEntity, [FromRoute]string id)
+        public async Task<IActionResult> Update(StationEntity stationEntity, [FromRoute]string id)
         {
-            var existing = _stationRepo.Get(id);
+            var existing = await _stationRepo.GetAsync(id);
             if (existing == null)
             {
                 return NotFound();
             }
 
-            existing.Name = stationEntity.Name;
-            //existing.Location = stationEntity.Location;
+            await _stationRepo.UpdateAsync(existing);
             
-            _stationRepo.Update(existing);
-            
-            return existing;
-        }
-        
-        [HttpGet("{id}/GetSockets")]
-        public IQueryable<SocketsEntity> GetAll(string id)
-        {
-            var sockets = _socketRepo.GetAll().Where(s => s.Station.Id == id);
-
-            return sockets;
-        }
-
-        [HttpGet("GetSocket/{id}")]
-        public ActionResult<SocketsEntity> GetOneSocket(string id)
-        {
-            var socket = _socketRepo.Get(id);
-
-            if (socket == null)
-            {
-                return NotFound();
-            }
-
-            return socket;
-        }
-
-        [HttpPost("{id}/AddSocket")]
-        public ActionResult<SocketsEntity> Post([FromBody] SocketsEntity socket, [FromRoute] string id)
-        {
-            _socketRepo.Queryable.Include(s => s.Station);
-            socket.Station = _stationRepo.Get(id);
-
-            _socketRepo.Add(socket);
-
-            return CreatedAtAction(nameof(GetOneSocket), new {id = socket.Id}, socket);
+            return Ok(existing);
         }
     }
 }

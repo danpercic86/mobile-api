@@ -193,33 +193,11 @@ namespace itec_mobile_api_final.Migrations
 
                     b.Property<string>("Model");
 
-                    b.Property<string>("SocketId");
-
                     b.Property<DateTime>("Year");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("SocketId");
-
-                    b.ToTable("Cars","mobile-api");
-                });
-
-            modelBuilder.Entity("itec_mobile_api_final.Sockets.SocketsEntity", b =>
-                {
-                    b.Property<string>("Id")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<int>("State");
-
-                    b.Property<string>("StationId");
-
-                    b.Property<int>("Type");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("StationId");
-
-                    b.ToTable("Sockets","mobile-api");
+                    b.ToTable("CarEntities");
                 });
 
             modelBuilder.Entity("itec_mobile_api_final.Stations.StationEntity", b =>
@@ -232,9 +210,13 @@ namespace itec_mobile_api_final.Migrations
 
                     b.Property<string>("Name");
 
+                    b.Property<int>("OccupiedSockets");
+
+                    b.Property<int>("TotalSockets");
+
                     b.HasKey("Id");
 
-                    b.ToTable("Stations","mobile-api");
+                    b.ToTable("StationEntities");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -279,21 +261,6 @@ namespace itec_mobile_api_final.Migrations
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser")
                         .WithMany()
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade);
-                });
-
-            modelBuilder.Entity("itec_mobile_api_final.Cars.CarEntity", b =>
-                {
-                    b.HasOne("itec_mobile_api_final.Sockets.SocketsEntity", "Socket")
-                        .WithMany()
-                        .HasForeignKey("SocketId");
-                });
-
-            modelBuilder.Entity("itec_mobile_api_final.Sockets.SocketsEntity", b =>
-                {
-                    b.HasOne("itec_mobile_api_final.Stations.StationEntity", "Station")
-                        .WithMany("Sockets")
-                        .HasForeignKey("StationId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 #pragma warning restore 612, 618

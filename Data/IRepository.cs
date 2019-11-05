@@ -7,12 +7,12 @@ namespace itec_mobile_api_final.Data
 {
     public interface IRepository<T> where T: Entity
     {    
-        T Get<TKey>(TKey id);
-        IQueryable<T> GetAll();
-        void Add(T entity);
-        void Update(T entity);
-        void Delete(T entity);
-        void Delete(int id);
+        Task<T> GetAsync<TKey>(TKey id);
+        Task<IQueryable<T>> GetAllAsync();
+        Task AddAsync(T entity);
+        Task UpdateAsync(T entity);
+        Task DeleteAsync(T entity);
+        Task DeleteAsync(int id);
         IQueryable<T> Queryable { get; }
     }
 }

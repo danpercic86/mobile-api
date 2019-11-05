@@ -8,9 +8,6 @@ namespace itec_mobile_api_final.Migrations
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.EnsureSchema(
-                name: "mobile-api");
-
             migrationBuilder.CreateTable(
                 name: "AspNetRoles",
                 columns: table => new
@@ -51,17 +48,35 @@ namespace itec_mobile_api_final.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Stations",
-                schema: "mobile-api",
+                name: "CarEntities",
+                columns: table => new
+                {
+                    Id = table.Column<string>(nullable: false),
+                    Model = table.Column<string>(nullable: true),
+                    Company = table.Column<string>(nullable: true),
+                    Year = table.Column<DateTime>(nullable: false),
+                    Autonomy = table.Column<float>(nullable: false),
+                    BatteryLeft = table.Column<float>(nullable: false),
+                    LastTechRevision = table.Column<DateTime>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_CarEntities", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "StationEntities",
                 columns: table => new
                 {
                     Id = table.Column<string>(nullable: false),
                     Name = table.Column<string>(nullable: true),
-                    LocationStr = table.Column<string>(nullable: true)
+                    TotalSockets = table.Column<int>(nullable: false),
+                    OccupiedSockets = table.Column<int>(nullable: false),
+                    Location = table.Column<string>(nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Stations", x => x.Id);
+                    table.PrimaryKey("PK_StationEntities", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -170,54 +185,6 @@ namespace itec_mobile_api_final.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
-            migrationBuilder.CreateTable(
-                name: "Sockets",
-                schema: "mobile-api",
-                columns: table => new
-                {
-                    Id = table.Column<string>(nullable: false),
-                    Type = table.Column<int>(nullable: false),
-                    State = table.Column<int>(nullable: false),
-                    StationId = table.Column<string>(nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Sockets", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Sockets_Stations_StationId",
-                        column: x => x.StationId,
-                        principalSchema: "mobile-api",
-                        principalTable: "Stations",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Cars",
-                schema: "mobile-api",
-                columns: table => new
-                {
-                    Id = table.Column<string>(nullable: false),
-                    Model = table.Column<string>(nullable: true),
-                    Company = table.Column<string>(nullable: true),
-                    Year = table.Column<DateTime>(nullable: false),
-                    Autonomy = table.Column<float>(nullable: false),
-                    BatteryLeft = table.Column<float>(nullable: false),
-                    SocketId = table.Column<string>(nullable: true),
-                    LastTechRevision = table.Column<DateTime>(nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Cars", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Cars_Sockets_SocketId",
-                        column: x => x.SocketId,
-                        principalSchema: "mobile-api",
-                        principalTable: "Sockets",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                });
-
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",
                 table: "AspNetRoleClaims",
@@ -254,18 +221,6 @@ namespace itec_mobile_api_final.Migrations
                 table: "AspNetUsers",
                 column: "NormalizedUserName",
                 unique: true);
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Cars_SocketId",
-                schema: "mobile-api",
-                table: "Cars",
-                column: "SocketId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Sockets_StationId",
-                schema: "mobile-api",
-                table: "Sockets",
-                column: "StationId");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
@@ -286,22 +241,16 @@ namespace itec_mobile_api_final.Migrations
                 name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
-                name: "Cars",
-                schema: "mobile-api");
+                name: "CarEntities");
+
+            migrationBuilder.DropTable(
+                name: "StationEntities");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");
 
             migrationBuilder.DropTable(
                 name: "AspNetUsers");
-
-            migrationBuilder.DropTable(
-                name: "Sockets",
-                schema: "mobile-api");
-
-            migrationBuilder.DropTable(
-                name: "Stations",
-                schema: "mobile-api");
         }
     }
 }

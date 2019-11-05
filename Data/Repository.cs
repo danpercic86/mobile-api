@@ -19,41 +19,41 @@ namespace itec_mobile_api_final.Data
             DbSet = context.Set<T>();
             _queryable = DbSet;
         }
-        public T Get<TKey>(TKey id)
+        public async Task<T> GetAsync<TKey>(TKey id)
         {
-            return DbSet.Find(id);
+            return await DbSet.FindAsync(id);
         }
 
-        public IQueryable<T> GetAll()
-        {
+        public async Task<IQueryable<T>> GetAllAsync()
+        { 
             return DbSet;
         }
 
-        public void Add(T entity)
+        public async Task AddAsync(T entity)
         {
             DbSet.Add(entity);
-            Context.SaveChanges();
+            await Save();
         }
 
-        public void Update(T entity)
+        public async Task UpdateAsync(T entity)
         {
             DbSet.Update(entity);
-            Context.SaveChanges();
+            await Save();
         }
 
-        public void Delete(T entity)
+        public async Task DeleteAsync(T entity)
         {
             DbSet.Remove(entity);
-            Context.SaveChanges();
+            await Save();
         }
 
-        public void Delete(int id)
+        public async Task DeleteAsync(int id)
         {
-            this.Delete(DbSet.Find(id));
+            await this.DeleteAsync(await DbSet.FindAsync(id));
         }
-        public void Save()
+        public async Task Save()
         {
-            Context.SaveChanges();
+            await Context.SaveChangesAsync();
         }
     }
 }
