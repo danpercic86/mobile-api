@@ -1,4 +1,5 @@
-﻿using itec_mobile_api_final.Entities;
+﻿using itec_mobile_api_final.Cars;
+using itec_mobile_api_final.Entities;
 using itec_mobile_api_final.Sockets;
 using itec_mobile_api_final.Stations;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
@@ -13,6 +14,7 @@ namespace itec_mobile_api_final.Data
         }
         public DbSet<StationEntity> StationEntities { get; set; }
         public DbSet<SocketsEntity> SocketsEntities { get; set; }
+        public DbSet<CarEntity> CarEntities { get; set; }
         
         public IRepository<T> GetRepository<T>() where T: Entity
         {

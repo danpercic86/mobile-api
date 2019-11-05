@@ -9,7 +9,7 @@ using itec_mobile_api_final.Data;
 namespace itec_mobile_api_final.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20191028234100_initial")]
+    [Migration("20191105000657_initial")]
     partial class initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -180,6 +180,32 @@ namespace itec_mobile_api_final.Migrations
                     b.ToTable("AspNetUserTokens");
                 });
 
+            modelBuilder.Entity("itec_mobile_api_final.Cars.CarEntity", b =>
+                {
+                    b.Property<string>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<float>("Autonomy");
+
+                    b.Property<float>("BatteryLeft");
+
+                    b.Property<string>("Company");
+
+                    b.Property<DateTime>("LastTechRevision");
+
+                    b.Property<string>("Model");
+
+                    b.Property<string>("SocketId");
+
+                    b.Property<DateTime>("Year");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("SocketId");
+
+                    b.ToTable("Cars","mobile-api");
+                });
+
             modelBuilder.Entity("itec_mobile_api_final.Sockets.SocketsEntity", b =>
                 {
                     b.Property<string>("Id")
@@ -255,6 +281,13 @@ namespace itec_mobile_api_final.Migrations
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("itec_mobile_api_final.Cars.CarEntity", b =>
+                {
+                    b.HasOne("itec_mobile_api_final.Sockets.SocketsEntity", "Socket")
+                        .WithMany()
+                        .HasForeignKey("SocketId");
                 });
 
             modelBuilder.Entity("itec_mobile_api_final.Sockets.SocketsEntity", b =>

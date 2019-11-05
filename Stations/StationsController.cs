@@ -1,14 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Linq;
 using itec_mobile_api_final.Data;
 using itec_mobile_api_final.Sockets;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Filters;
-using Microsoft.AspNetCore.Rewrite.Internal;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace itec_mobile_api_final.Stations
 {
@@ -76,7 +70,7 @@ namespace itec_mobile_api_final.Stations
             }
 
             existing.Name = stationEntity.Name;
-            existing.Location = stationEntity.Location;
+            //existing.Location = stationEntity.Location;
             
             _stationRepo.Update(existing);
             

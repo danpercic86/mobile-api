@@ -192,6 +192,32 @@ namespace itec_mobile_api_final.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
+            migrationBuilder.CreateTable(
+                name: "Cars",
+                schema: "mobile-api",
+                columns: table => new
+                {
+                    Id = table.Column<string>(nullable: false),
+                    Model = table.Column<string>(nullable: true),
+                    Company = table.Column<string>(nullable: true),
+                    Year = table.Column<DateTime>(nullable: false),
+                    Autonomy = table.Column<float>(nullable: false),
+                    BatteryLeft = table.Column<float>(nullable: false),
+                    SocketId = table.Column<string>(nullable: true),
+                    LastTechRevision = table.Column<DateTime>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Cars", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Cars_Sockets_SocketId",
+                        column: x => x.SocketId,
+                        principalSchema: "mobile-api",
+                        principalTable: "Sockets",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",
                 table: "AspNetRoleClaims",
@@ -230,6 +256,12 @@ namespace itec_mobile_api_final.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
+                name: "IX_Cars_SocketId",
+                schema: "mobile-api",
+                table: "Cars",
+                column: "SocketId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Sockets_StationId",
                 schema: "mobile-api",
                 table: "Sockets",
@@ -254,7 +286,7 @@ namespace itec_mobile_api_final.Migrations
                 name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
-                name: "Sockets",
+                name: "Cars",
                 schema: "mobile-api");
 
             migrationBuilder.DropTable(
@@ -262,6 +294,10 @@ namespace itec_mobile_api_final.Migrations
 
             migrationBuilder.DropTable(
                 name: "AspNetUsers");
+
+            migrationBuilder.DropTable(
+                name: "Sockets",
+                schema: "mobile-api");
 
             migrationBuilder.DropTable(
                 name: "Stations",
