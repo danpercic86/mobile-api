@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
+using itec_mobile_api_final.Models;
 using itec_mobile_api_final.Models.Requests;
 using itec_mobile_api_final.Models.Responses;
 using itec_mobile_api_final.Services;
@@ -21,7 +23,34 @@ namespace itec_mobile_api_final.Controllers
         [HttpPost("Register")]
         public async Task<IActionResult> Register([FromBody] UserRegistrationRequest request)
         {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(new AuthFailedResponse
+                {
+                    Errors = ModelState.Values.SelectMany(x => x.Errors.Select(a => a.ErrorMessage))
+                });
+            }
+            
             var authResponse = await _identityService.RegisterAsync(request.Email, request.Password);
+
+            if (!authResponse.Success)
+            {
+                return BadRequest(new AuthFailedResponse
+                {
+                    Errors = authResponse.Errors
+                });
+            }
+
+            return Ok(new AuthSuccessResponse
+            {
+                Token = authResponse.Token
+            });
+        }
+        
+        [HttpPost("Login")]
+        public async Task<IActionResult> Login([FromBody] UserLoginRequest request)
+        {
+            var authResponse = await _identityService.LoginAsync(request.Email, request.Password);
 
             if (!authResponse.Success)
             {

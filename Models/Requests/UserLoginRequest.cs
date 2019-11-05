@@ -1,9 +1,8 @@
-﻿using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
+using System.ComponentModel.DataAnnotations;
 
 namespace itec_mobile_api_final.Models.Requests
 {
-    public class UserRegistrationRequest
+    public class UserLoginRequest
     {
         [EmailAddress]
         public string Email { get; set; }

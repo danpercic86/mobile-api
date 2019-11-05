@@ -50,6 +50,34 @@ namespace itec_mobile_api_final.Services
                 };
             }
 
+            return GenerateAuthenticationResult(newUser);
+        }
+
+        public async Task<AuthenticationResult> LoginAsync(string email, string password)
+        {
+            var user = await _userManager.FindByEmailAsync(email);
+            if (user is null)
+            {
+                return new AuthenticationResult
+                {
+                    Errors = new[] {"User does not exist"}
+                };
+            }
+
+            var isValidPassword = await _userManager.CheckPasswordAsync(user, password);
+            if (!isValidPassword)
+            {
+                return new AuthenticationResult
+                {
+                    Errors = new[] {"User/password combination is wrong"}
+                };
+            }
+
+            return GenerateAuthenticationResult(user);
+        }
+
+        private AuthenticationResult GenerateAuthenticationResult(IdentityUser newUser)
+        {
             var tokenHandler = new JwtSecurityTokenHandler();
             var key = Encoding.ASCII.GetBytes(_jwtOptions.Secret);
             var tokenDescriptor = new SecurityTokenDescriptor
