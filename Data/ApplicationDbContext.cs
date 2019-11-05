@@ -1,8 +1,10 @@
-﻿using itec_mobile_api_final.Entities;
+﻿using System.Drawing;
+using itec_mobile_api_final.Entities;
 using itec_mobile_api_final.Sockets;
 using itec_mobile_api_final.Stations;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 
 namespace itec_mobile_api_final.Data
 {
@@ -26,6 +28,11 @@ namespace itec_mobile_api_final.Data
                 .HasOne(s => s.Station)
                 .WithMany(s => s.Sockets)
                 .OnDelete(DeleteBehavior.Cascade);
+            
+            builder.Entity<StationEntity>()
+                .Property(e => e.Location).HasConversion(
+                    v => JsonConvert.SerializeObject(v/*, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore }*/),
+                    v => JsonConvert.DeserializeObject<PointF>(v/*, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore }*/));
         }
     }
 }

@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
-using itec_mobile_api_final.Models;
 using itec_mobile_api_final.Models.Requests;
 using itec_mobile_api_final.Models.Responses;
 using itec_mobile_api_final.Services;

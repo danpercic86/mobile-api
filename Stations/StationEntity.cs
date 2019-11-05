@@ -14,13 +14,6 @@ namespace itec_mobile_api_final.Stations
         public string Name { get; set; }
         [JsonIgnore]
         public List<SocketsEntity> Sockets { get; set; }
-        [JsonIgnore]
-        public string LocationStr { get; set; }
-        [NotMapped]
-        public PointF Location
-        {
-            get => JsonConvert.DeserializeObject<PointF>(LocationStr);
-            set => LocationStr = JsonConvert.SerializeObject(value);
-        }
+        public PointF Location { get; set; }
     }
 }
