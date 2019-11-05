@@ -13,7 +13,11 @@ namespace itec_mobile_api_final.Stations
         public string Name { get; set; }
         [JsonIgnore]
         public List<SocketsEntity> Sockets { get; set; }
+<<<<<<< HEAD
         public PointF Location { get; set; }
+=======
+//        [JsonIgnore]
+        public Point LocationStr { get; set; }
         
 //        [NotMapped]
 //        public Point Location
@@ -23,5 +27,11 @@ namespace itec_mobile_api_final.Stations
 //        }
     }
     [Serializable]
+    [NotMapped]
+    public class Point
+    {
+        public decimal X { get; set; }
+        public decimal Y { get; set; }
+>>>>>>> cars
     }
 }
