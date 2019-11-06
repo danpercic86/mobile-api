@@ -52,7 +52,7 @@ namespace itec_mobile_api_final
             {
                 c.SwaggerDoc("v1", new Info {Title = "iTEC Mobile API", Version = "v1.0"});
                 c.SchemaFilter<ReadOnlyFilter>();
-                
+
                 var security = new Dictionary<string, IEnumerable<string>>
                 {
                     {"Bearer", new string[0]}
@@ -60,25 +60,15 @@ namespace itec_mobile_api_final
                 
                 c.AddSecurityDefinition("Bearer", new ApiKeyScheme
                 {
-                    Description = "JWT Authorization header using bearer scheme", 
+                    Description = "JWT Authorization header using bearer scheme",
                     Name = "Authorization",
                     In = "header",
                     Type = "apiKey",
                 });
                 
                 c.AddSecurityRequirement(security);
-                
-//
-//                var security = new OpenApiSecurityRequirement
-//                {
-//                    {securityScheme, new List<string>()}
-//                };
-//
-//                c.AddSecurityDefinition("Bearer", securityScheme);
-//                c.AddSecurityRequirement(security);
-            });
-            
-            // Ensure JWT
+
+                // Ensure JWT
             var jwtOptions = new JwtOptions();
             Configuration.Bind(nameof(jwtOptions), jwtOptions);
             services.AddSingleton(jwtOptions);
