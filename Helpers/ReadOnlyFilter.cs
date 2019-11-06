@@ -2,14 +2,14 @@
 using System.ComponentModel;
 using System.Linq;
 using System.Reflection;
-using Microsoft.OpenApi.Models;
+using Swashbuckle.AspNetCore.Swagger;
 using Swashbuckle.AspNetCore.SwaggerGen;
 
 namespace itec_mobile_api_final.Helpers
 {
     public class ReadOnlyFilter : ISchemaFilter
     {
-        public void Apply(OpenApiSchema schema, SchemaFilterContext context)
+        public void Apply(Schema schema, SchemaFilterContext context)
         {
             if (schema.Properties == null)
             {
@@ -18,23 +18,23 @@ namespace itec_mobile_api_final.Helpers
 
             foreach (var schemaProperty in schema.Properties)
             {
-                var property = context.ApiModel.Type.GetProperty(schemaProperty.Key, BindingFlags.IgnoreCase | BindingFlags.Public | BindingFlags.Instance);
+                var property = context.SystemType.GetProperty(schemaProperty.Key, BindingFlags.IgnoreCase | BindingFlags.Public | BindingFlags.Instance);
                 if (property != null)
                 {
                     var attr = (ReadOnlyAttribute)property.GetCustomAttributes(typeof(ReadOnlyAttribute), false).SingleOrDefault();
                     if (attr != null && attr.IsReadOnly)
                     {
                         // https://github.com/swagger-api/swagger-ui/issues/3445#issuecomment-339649576
-                        if (schemaProperty.Value.Reference != null)
+                        if (schemaProperty.Value.Ref != null)
                         {
-                            schemaProperty.Value.AllOf = new List<OpenApiSchema>()
+                            schemaProperty.Value.AllOf = new List<Schema>()
                             {
-                                new OpenApiSchema()
+                                new Schema()
                                 {
-                                    Reference = schemaProperty.Value.Reference
+                                    Ref = schemaProperty.Value.Ref
                                 }
                             };
-                            schemaProperty.Value.Reference = null;
+                            schemaProperty.Value.Ref = null;
                         }
 
                         schemaProperty.Value.ReadOnly = true;

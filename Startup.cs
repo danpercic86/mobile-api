@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Text;
+﻿using System.Text;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Hosting;
@@ -14,7 +13,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
-using Microsoft.OpenApi.Models;
+using Swashbuckle.AspNetCore.Swagger;
 
 namespace itec_mobile_api_final
 {
@@ -50,24 +49,8 @@ namespace itec_mobile_api_final
 
             services.AddSwaggerGen(c =>
             {
-                c.SwaggerDoc("v1", new OpenApiInfo {Title = "iTEC Mobile API", Version = "v1.0"});
+                c.SwaggerDoc("v1", new Info {Title = "iTEC Mobile API", Version = "v1.0"});
                 c.SchemaFilter<ReadOnlyFilter>();
-
-                var securityScheme = new OpenApiSecurityScheme
-                {
-                    Description = "JWT Authorization header using bearer scheme", 
-                    Name = "Authorization",
-                    In = ParameterLocation.Header,
-                    Type = SecuritySchemeType.ApiKey
-                };
-
-                var security = new OpenApiSecurityRequirement
-                {
-                    {securityScheme, new List<string>()}
-                };
-
-                c.AddSecurityDefinition("Bearer", securityScheme);
-                c.AddSecurityRequirement(security);
             });
             
             // Ensure JWT
