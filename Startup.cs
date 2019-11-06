@@ -14,7 +14,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
-using Microsoft.OpenApi.Models;
+using Swashbuckle.AspNetCore.Swagger;
 
 namespace itec_mobile_api_final
 {
@@ -50,24 +50,32 @@ namespace itec_mobile_api_final
 
             services.AddSwaggerGen(c =>
             {
-                c.SwaggerDoc("v1", new OpenApiInfo {Title = "iTEC Mobile API", Version = "v1.0"});
+                c.SwaggerDoc("v1", new Info {Title = "iTEC Mobile API", Version = "v1.0"});
                 c.SchemaFilter<ReadOnlyFilter>();
-
-                var securityScheme = new OpenApiSecurityScheme
+                
+                var security = new Dictionary<string, IEnumerable<string>>
+                {
+                    {"Bearer", new string[0]}
+                };
+                
+                c.AddSecurityDefinition("Bearer", new ApiKeyScheme
                 {
                     Description = "JWT Authorization header using bearer scheme", 
                     Name = "Authorization",
-                    In = ParameterLocation.Header,
-                    Type = SecuritySchemeType.ApiKey
-                };
-
-                var security = new OpenApiSecurityRequirement
-                {
-                    {securityScheme, new List<string>()}
-                };
-
-                c.AddSecurityDefinition("Bearer", securityScheme);
+                    In = "header",
+                    Type = "apiKey",
+                });
+                
                 c.AddSecurityRequirement(security);
+                
+//
+//                var security = new OpenApiSecurityRequirement
+//                {
+//                    {securityScheme, new List<string>()}
+//                };
+//
+//                c.AddSecurityDefinition("Bearer", securityScheme);
+//                c.AddSecurityRequirement(security);
             });
             
             // Ensure JWT
@@ -121,7 +129,7 @@ namespace itec_mobile_api_final
             app.UseCookiePolicy();
 
             app.UseAuthentication();
-            app.UseSwagger();
+            app.UseSwagger(options => { options.RouteTemplate = "/swagger/{documentName}/swagger.json"; });
             app.UseSwaggerUI(c => { c.SwaggerEndpoint("/swagger/v1/swagger.json", "post API V1"); });
             
             app.UseMvc();
