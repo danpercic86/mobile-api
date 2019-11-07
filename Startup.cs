@@ -65,10 +65,11 @@ namespace itec_mobile_api_final
                     In = "header",
                     Type = "apiKey",
                 });
-                
-                c.AddSecurityRequirement(security);
 
-                // Ensure JWT
+                c.AddSecurityRequirement(security);
+            });
+            
+            // Ensure JWT
             var jwtOptions = new JwtOptions();
             Configuration.Bind(nameof(jwtOptions), jwtOptions);
             services.AddSingleton(jwtOptions);
