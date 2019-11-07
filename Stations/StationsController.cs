@@ -1,9 +1,13 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using itec_mobile_api_final.Data;
+using itec_mobile_api_final.Extensions;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration.UserSecrets;
 
 namespace itec_mobile_api_final.Stations
 {
@@ -22,8 +26,19 @@ namespace itec_mobile_api_final.Stations
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
+            var userId = HttpContext.GetCurrentUserId();
+            if (userId == null)
+            {
+                return Unauthorized();
+            }
+
             var allAsync = await _stationRepo.GetAllAsync();
-            var stations = allAsync.Where(s => s.Deleted == false);
+            if (allAsync == null)
+            {
+                return NotFound();
+            }
+
+            var stations = allAsync.Where(s => s.Deleted == false && s.Old == false);
 
             return Ok(stations);
         }
@@ -31,51 +46,102 @@ namespace itec_mobile_api_final.Stations
         [HttpGet("{id}")]
         public async Task<IActionResult> GetOne(string id)
         {
+            var userId = HttpContext.GetCurrentUserId();
+            if (userId == null)
+            {
+                return Unauthorized();
+            }
+            
             var station = await _stationRepo.GetAsync(id);
-            if (station == null || station.Deleted)
+            if (station == null)
             {
                 return NotFound();
+            }
+
+            if (station.Deleted)
+            {
+                return Ok(new
+                {
+                    Deleted = true,
+                    Id = station.OldStationId,
+                });
             }
 
             return Ok(station);
         }
 
         [HttpPost]
-        public async Task<IActionResult> Post([FromBody]StationEntity station)
+        public async Task<IActionResult> Add([FromBody] StationEntity station)
         {
+            var userId = HttpContext.GetCurrentUserId();
+            if (userId == null)
+            {
+                return Unauthorized();
+            }
+
+            station.UserId = userId;
+
             await _stationRepo.AddAsync(station);
 
             return CreatedAtAction(nameof(GetOne), new {id = station.Id}, station);
         }
 
-        [HttpPatch("{id}")]
-        public async Task<IActionResult> Update(StationEntity stationEntity, [FromRoute]string id)
+        [HttpPost("{id}/Edit")]
+        public async Task<IActionResult> Edit(StationEntity stationEntity, [FromRoute] string id)
         {
+            var userId = HttpContext.GetCurrentUserId();
+            if (userId == null)
+            {
+                return Unauthorized();
+            }
+            
             var existing = await _stationRepo.GetAsync(id);
             if (existing == null)
             {
                 return NotFound();
             }
 
-            await _stationRepo.UpdateAsync(existing);
-            
-            return Ok(existing);
+            stationEntity.OldStationId = existing.Id;
+            stationEntity.UserId = userId;
+            existing.Old = true;
+
+            await _stationRepo.AddAsync(stationEntity);
+
+            return Ok(stationEntity);
         }
 
-        [HttpPost("{id}/delete")]
+        [HttpPost("{id}/Delete")]
         public async Task<IActionResult> Delete(string id)
         {
-            var station = await _stationRepo.GetAsync(id);
+            var userId = HttpContext.GetCurrentUserId();
+            if (userId == null)
+            {
+                return Unauthorized();
+            }
             
-            if (station == null || station.Deleted)
+            var existing = await _stationRepo.GetAsync(id);
+
+            if (existing == null || existing.Deleted || existing.Old)
             {
                 return NotFound();
             }
 
-            station.Deleted = true;
-            await _stationRepo.UpdateAsync(station);
+            var newStation = new StationEntity
+            {
+                Name = existing.Name,
+                TotalSockets = existing.TotalSockets,
+                OccupiedSockets = existing.OccupiedSockets,
+                Location = existing.Location,
+                OldStationId = existing.Id,
+                OldStation = existing.OldStation,
+                UserId = userId,
+                Deleted = true,
+            };
+            existing.Old = true;
+            
+            await _stationRepo.AddAsync(newStation);
 
-            return Ok(station);
+            return Ok(newStation);
         }
     }
 }

@@ -17,12 +17,10 @@ namespace itec_mobile_api_final.Cars
     public class CarsController : Controller
     {
         private readonly IRepository<CarEntity> _carRepository;
-        private readonly UserManager<User> _userManager;
         
-        public CarsController(ApplicationDbContext context, UserManager<User> userManager)
+        public CarsController(ApplicationDbContext context)
         {
             _carRepository = context.GetRepository<CarEntity>();
-            _userManager = userManager;
         }
 
         [HttpGet]
@@ -77,7 +75,7 @@ namespace itec_mobile_api_final.Cars
                 LastTechRevision = car.LastTechRevision,
                 UserId = HttpContext.GetCurrentUserId(),
             };
-
+            
             await _carRepository.AddAsync(newCar);
             return CreatedAtAction(nameof(GetOne), new {id = newCar.Id}, newCar);
         }
