@@ -22,7 +22,8 @@ namespace itec_mobile_api_final.Stations
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
-            var stations = await _stationRepo.GetAllAsync();
+            var allAsync = await _stationRepo.GetAllAsync();
+            var stations = allAsync.Where(s => s.Deleted == false);
 
             return Ok(stations);
         }
@@ -31,7 +32,7 @@ namespace itec_mobile_api_final.Stations
         public async Task<IActionResult> GetOne(string id)
         {
             var station = await _stationRepo.GetAsync(id);
-            if (station == null)
+            if (station == null || station.Deleted)
             {
                 return NotFound();
             }
@@ -47,19 +48,6 @@ namespace itec_mobile_api_final.Stations
             return CreatedAtAction(nameof(GetOne), new {id = station.Id}, station);
         }
 
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> Delete(string id)
-        {
-            var station = await _stationRepo.GetAsync(id);
-            if (station == null)
-            {
-                return NotFound();
-            }
-
-            await _stationRepo.DeleteAsync(station);
-            return Ok("Station deleted!");
-        }
-
         [HttpPatch("{id}")]
         public async Task<IActionResult> Update(StationEntity stationEntity, [FromRoute]string id)
         {
@@ -72,6 +60,22 @@ namespace itec_mobile_api_final.Stations
             await _stationRepo.UpdateAsync(existing);
             
             return Ok(existing);
+        }
+
+        [HttpPost("{id}/delete")]
+        public async Task<IActionResult> Delete(string id)
+        {
+            var station = await _stationRepo.GetAsync(id);
+            
+            if (station == null || station.Deleted)
+            {
+                return NotFound();
+            }
+
+            station.Deleted = true;
+            await _stationRepo.UpdateAsync(station);
+
+            return Ok(station);
         }
     }
 }
