@@ -8,6 +8,7 @@ using itec_mobile_api_final.Entities;
 using itec_mobile_api_final.Models;
 using itec_mobile_api_final.Models.Requests;
 using itec_mobile_api_final.Options;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 
@@ -27,9 +28,6 @@ namespace itec_mobile_api_final.Services
         public async Task<AuthenticationResult> RegisterAsync(UserRegistrationRequest request)
         {
             var existingUser = await _userManager.FindByEmailAsync(request.Email);
-            
-            
-
             if (existingUser != null)
             {
                 return new AuthenticationResult
@@ -80,6 +78,16 @@ namespace itec_mobile_api_final.Services
             }
 
             return GenerateAuthenticationResult(user);
+        }
+
+        public async Task<AuthenticationResult> UpdateAsync(User currentUser ,UserUpdateRequest request)
+        {
+            currentUser.FirstName = request.FirstName;
+            currentUser.LastName = request.LastName;
+            
+            await _userManager.UpdateAsync(currentUser);
+            
+            return GenerateAuthenticationResult(currentUser);
         }
 
         private AuthenticationResult GenerateAuthenticationResult(User newUser)

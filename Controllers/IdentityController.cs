@@ -73,15 +73,38 @@ namespace itec_mobile_api_final.Controllers
             });
         }
 
-        // TODO: Nu e complet, trebuie puse mai multe campuri in User si o metoda in Service
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-        [HttpPost("Update")]
-        public async Task<IActionResult> Update([FromBody] UserLoginRequest request)
+        [HttpGet]
+        public async Task<IActionResult> Get()
         {
             var user = await HttpContext.GetCurrentUserAsync(_userManager);
-            user.Email = request.Email;
-            await _userManager.UpdateAsync(user);
-            return Ok(user.Email);
+            return Ok(new
+            {
+                user.FirstName,
+                user.LastName,
+                user.Email,
+            });
+        }
+        
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        [HttpPost("Update")]
+        public async Task<IActionResult> Update([FromBody] UserUpdateRequest request)
+        {
+            var user = await HttpContext.GetCurrentUserAsync(_userManager);
+            var updateResponse = await _identityService.UpdateAsync(user, request);
+            
+            if (!updateResponse.Success)
+            {
+                return BadRequest(new AuthFailedResponse
+                {
+                    Errors = updateResponse.Errors
+                });
+            }
+            
+            return Ok(new AuthSuccessResponse
+            {
+                Token = updateResponse.Token
+            });
         }
     }
 }
