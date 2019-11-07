@@ -47,6 +47,12 @@ namespace itec_mobile_api_final.Cars
             {
                 return NotFound();
             }
+
+            var userId = HttpContext.GetCurrentUserId();
+            if (car.UserId != userId)
+            {
+                return Unauthorized();
+            }
             
             return Ok(car);
         }
@@ -54,6 +60,12 @@ namespace itec_mobile_api_final.Cars
         [HttpPost]
         public async Task<IActionResult> Post([FromBody]CreateCarRequest car)
         {
+            var userId = HttpContext.GetCurrentUserId();
+            if (userId is null)
+            {
+                return Unauthorized();
+            }
+            
             var newCar = new CarEntity
             {
                 Autonomy = car.Autonomy,
@@ -76,6 +88,12 @@ namespace itec_mobile_api_final.Cars
             if (existing == null)
             {
                 return NotFound();
+            }
+            
+            var userId = HttpContext.GetCurrentUserId();
+            if (existing.UserId != userId)
+            {
+                return Unauthorized();
             }
 
             existing.Model = car.Model;
