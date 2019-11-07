@@ -13,7 +13,7 @@ namespace itec_mobile_api_final.Cars
         public string UserId { get; set; }
         [JsonIgnore]
         [ForeignKey(nameof(UserId))]
-        public IdentityUser User { get; set; }
+        public User User { get; set; }
         public string Model { get; set; }
         public string Company { get; set; }
         public int Year { get; set; }

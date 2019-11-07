@@ -4,7 +4,9 @@ using System.Linq;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
+using itec_mobile_api_final.Entities;
 using itec_mobile_api_final.Models;
+using itec_mobile_api_final.Models.Requests;
 using itec_mobile_api_final.Options;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
@@ -13,18 +15,20 @@ namespace itec_mobile_api_final.Services
 {
     public class IdentityService : IIdentityService
     {
-        private readonly UserManager<IdentityUser> _userManager;
+        private readonly UserManager<User> _userManager;
         private readonly JwtOptions _jwtOptions;
 
-        public IdentityService(UserManager<IdentityUser> userManager, JwtOptions jwtOptions)
+        public IdentityService(UserManager<User> userManager, JwtOptions jwtOptions)
         {
             _userManager = userManager;
             _jwtOptions = jwtOptions;
         }
 
-        public async Task<AuthenticationResult> RegisterAsync(string email, string password)
+        public async Task<AuthenticationResult> RegisterAsync(UserRegistrationRequest request)
         {
-            var existingUser = await _userManager.FindByEmailAsync(email);
+            var existingUser = await _userManager.FindByEmailAsync(request.Email);
+            
+            
 
             if (existingUser != null)
             {
@@ -34,13 +38,15 @@ namespace itec_mobile_api_final.Services
                 };
             }
             
-            var newUser = new IdentityUser
+            var newUser = new User
             {
-                Email = email,
-                UserName = email
+                Email = request.Email,
+                UserName = request.Email,
+                FirstName = request.FirstName,
+                LastName = request.LastName,
             };
 
-            var createdUser = await _userManager.CreateAsync(newUser, password);
+            var createdUser = await _userManager.CreateAsync(newUser, request.Password);
 
             if (!createdUser.Succeeded)
             {
@@ -76,7 +82,7 @@ namespace itec_mobile_api_final.Services
             return GenerateAuthenticationResult(user);
         }
 
-        private AuthenticationResult GenerateAuthenticationResult(IdentityUser newUser)
+        private AuthenticationResult GenerateAuthenticationResult(User newUser)
         {
             var tokenHandler = new JwtSecurityTokenHandler();
             var key = Encoding.ASCII.GetBytes(_jwtOptions.Secret);

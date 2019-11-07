@@ -8,7 +8,7 @@ using Newtonsoft.Json;
 
 namespace itec_mobile_api_final.Data
 {
-    public class ApplicationDbContext : IdentityDbContext
+    public class ApplicationDbContext : IdentityDbContext<User>
     {
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
         {

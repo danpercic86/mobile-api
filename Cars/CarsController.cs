@@ -1,6 +1,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 using itec_mobile_api_final.Data;
+using itec_mobile_api_final.Entities;
 using itec_mobile_api_final.Extensions;
 using itec_mobile_api_final.Models.Requests;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -16,9 +17,9 @@ namespace itec_mobile_api_final.Cars
     public class CarsController : Controller
     {
         private readonly IRepository<CarEntity> _carRepository;
-        private readonly UserManager<IdentityUser> _userManager;
+        private readonly UserManager<User> _userManager;
         
-        public CarsController(ApplicationDbContext context, UserManager<IdentityUser> userManager)
+        public CarsController(ApplicationDbContext context, UserManager<User> userManager)
         {
             _carRepository = context.GetRepository<CarEntity>();
             _userManager = userManager;

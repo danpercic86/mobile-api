@@ -1,12 +1,12 @@
 ﻿using System.Collections.Generic;
 using System.Text;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using itec_mobile_api_final.Data;
+using itec_mobile_api_final.Entities;
 using itec_mobile_api_final.Helpers;
 using itec_mobile_api_final.Options;
 using itec_mobile_api_final.Services;
@@ -45,7 +45,7 @@ namespace itec_mobile_api_final
             });
             
             services.AddDbContext<ApplicationDbContext>(op => op.UseMySql(connectionString));
-            services.AddDefaultIdentity<IdentityUser>()
+            services.AddDefaultIdentity<User>()
                 .AddEntityFrameworkStores<ApplicationDbContext>();
 
             services.AddSwaggerGen(c =>
