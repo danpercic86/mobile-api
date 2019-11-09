@@ -84,6 +84,7 @@ namespace itec_mobile_api_final.Stations
             {
                 return Unauthorized();
             }
+            station.Id = Guid.NewGuid().ToString();
 
             station.UserId = userId;
 
