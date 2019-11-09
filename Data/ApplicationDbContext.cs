@@ -17,10 +17,10 @@ namespace itec_mobile_api_final.Data
         }
         public DbSet<StationEntity> StationEntities { get; set; }
         public DbSet<CarEntity> CarEntities { get; set; }
-        public DbSet<CategoryForumEntity> CategoryForumEntities { get; set;}
+        public DbSet<CategoryForumEntity> CategoryEntities { get; set;}
         public DbSet<VoteEntity> VoteEntities { get; set; }
-        public DbSet<MessageForumEntity> MessageForumEntities { get; set; }
-        public DbSet<TopicForumEntity> TopicForumEntities { get; set; }
+        public DbSet<MessageEntity> MessageEntities { get; set; }
+        public DbSet<TopicEntity> TopicEntities { get; set; }
 
 
         public IRepository<T> GetRepository<T>() where T: Entity

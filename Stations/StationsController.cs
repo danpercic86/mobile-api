@@ -5,6 +5,8 @@ using System.Threading.Tasks;
 using itec_mobile_api_final.Data;
 using itec_mobile_api_final.Extensions;
 using itec_mobile_api_final.Votes;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -12,6 +14,7 @@ namespace itec_mobile_api_final.Stations
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class StationsController : Controller
     {
         private readonly IRepository<StationEntity> _stationRepo;

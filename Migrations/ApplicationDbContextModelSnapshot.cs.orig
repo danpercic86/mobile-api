@@ -221,10 +221,17 @@ namespace itec_mobile_api_final.Migrations
 
                     b.HasIndex("UserId");
 
+<<<<<<< Updated upstream
+                    b.ToTable("CategoryForumEntities");
+                });
+
+            modelBuilder.Entity("itec_mobile_api_final.Forum.MessageForumEntity", b =>
+=======
                     b.ToTable("CategoryEntities");
                 });
 
             modelBuilder.Entity("itec_mobile_api_final.Forum.MessageEntity", b =>
+>>>>>>> Stashed changes
                 {
                     b.Property<string>("Id")
                         .ValueGeneratedOnAdd();
@@ -247,22 +254,37 @@ namespace itec_mobile_api_final.Migrations
 
                     b.HasIndex("UserId");
 
+<<<<<<< Updated upstream
+                    b.ToTable("MessageForumEntities");
+                });
+
+            modelBuilder.Entity("itec_mobile_api_final.Forum.TopicForumEntity", b =>
+=======
                     b.ToTable("MessageEntities");
                 });
 
             modelBuilder.Entity("itec_mobile_api_final.Forum.TopicEntity", b =>
+>>>>>>> Stashed changes
                 {
                     b.Property<string>("Id")
                         .ValueGeneratedOnAdd();
 
                     b.Property<string>("CategoryId");
 
+<<<<<<< Updated upstream
+=======
                     b.Property<string>("Content");
 
+>>>>>>> Stashed changes
                     b.Property<DateTime>("Created");
 
                     b.Property<bool>("Deleted");
 
+<<<<<<< Updated upstream
+                    b.Property<string>("Desctiption");
+
+=======
+>>>>>>> Stashed changes
                     b.Property<DateTime>("LastEdited");
 
                     b.Property<string>("Title");
@@ -275,7 +297,11 @@ namespace itec_mobile_api_final.Migrations
 
                     b.HasIndex("UserId");
 
+<<<<<<< Updated upstream
+                    b.ToTable("TopicForumEntities");
+=======
                     b.ToTable("TopicEntities");
+>>>>>>> Stashed changes
                 });
 
             modelBuilder.Entity("itec_mobile_api_final.Stations.StationEntity", b =>
@@ -394,9 +420,15 @@ namespace itec_mobile_api_final.Migrations
                         .HasForeignKey("UserId");
                 });
 
+<<<<<<< Updated upstream
+            modelBuilder.Entity("itec_mobile_api_final.Forum.MessageForumEntity", b =>
+                {
+                    b.HasOne("itec_mobile_api_final.Forum.TopicForumEntity", "Topic")
+=======
             modelBuilder.Entity("itec_mobile_api_final.Forum.MessageEntity", b =>
                 {
                     b.HasOne("itec_mobile_api_final.Forum.TopicEntity", "Topic")
+>>>>>>> Stashed changes
                         .WithMany()
                         .HasForeignKey("TopicId");
 
@@ -405,7 +437,11 @@ namespace itec_mobile_api_final.Migrations
                         .HasForeignKey("UserId");
                 });
 
+<<<<<<< Updated upstream
+            modelBuilder.Entity("itec_mobile_api_final.Forum.TopicForumEntity", b =>
+=======
             modelBuilder.Entity("itec_mobile_api_final.Forum.TopicEntity", b =>
+>>>>>>> Stashed changes
                 {
                     b.HasOne("itec_mobile_api_final.Forum.CategoryForumEntity", "Category")
                         .WithMany()

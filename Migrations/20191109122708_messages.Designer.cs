@@ -2,15 +2,17 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using itec_mobile_api_final.Data;
 
 namespace itec_mobile_api_final.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20191109122708_messages")]
+    partial class messages
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -221,10 +223,10 @@ namespace itec_mobile_api_final.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("CategoryEntities");
+                    b.ToTable("CategoryForumEntities");
                 });
 
-            modelBuilder.Entity("itec_mobile_api_final.Forum.MessageEntity", b =>
+            modelBuilder.Entity("itec_mobile_api_final.Forum.MessageForumEntity", b =>
                 {
                     b.Property<string>("Id")
                         .ValueGeneratedOnAdd();
@@ -247,7 +249,7 @@ namespace itec_mobile_api_final.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("MessageEntities");
+                    b.ToTable("MessageForumEntities");
                 });
 
             modelBuilder.Entity("itec_mobile_api_final.Forum.TopicEntity", b =>
@@ -257,13 +259,15 @@ namespace itec_mobile_api_final.Migrations
 
                     b.Property<string>("CategoryId");
 
-                    b.Property<string>("Content");
-
                     b.Property<DateTime>("Created");
 
                     b.Property<bool>("Deleted");
 
+                    b.Property<string>("Description");
+
                     b.Property<DateTime>("LastEdited");
+
+                    b.Property<string>("MessageId");
 
                     b.Property<string>("Title");
 
@@ -273,9 +277,11 @@ namespace itec_mobile_api_final.Migrations
 
                     b.HasIndex("CategoryId");
 
+                    b.HasIndex("MessageId");
+
                     b.HasIndex("UserId");
 
-                    b.ToTable("TopicEntities");
+                    b.ToTable("TopicForumEntities");
                 });
 
             modelBuilder.Entity("itec_mobile_api_final.Stations.StationEntity", b =>
@@ -394,7 +400,7 @@ namespace itec_mobile_api_final.Migrations
                         .HasForeignKey("UserId");
                 });
 
-            modelBuilder.Entity("itec_mobile_api_final.Forum.MessageEntity", b =>
+            modelBuilder.Entity("itec_mobile_api_final.Forum.MessageForumEntity", b =>
                 {
                     b.HasOne("itec_mobile_api_final.Forum.TopicEntity", "Topic")
                         .WithMany()
@@ -410,6 +416,10 @@ namespace itec_mobile_api_final.Migrations
                     b.HasOne("itec_mobile_api_final.Forum.CategoryForumEntity", "Category")
                         .WithMany()
                         .HasForeignKey("CategoryId");
+
+                    b.HasOne("itec_mobile_api_final.Forum.MessageForumEntity", "Message")
+                        .WithMany()
+                        .HasForeignKey("MessageId");
 
                     b.HasOne("itec_mobile_api_final.Entities.User", "User")
                         .WithMany()
