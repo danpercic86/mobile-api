@@ -122,6 +122,7 @@ namespace itec_mobile_api_final.Forum
             }
 
             category.Id = Guid.NewGuid().ToString();
+            category.UserId = userId;
             category.LastEdited = DateTime.Now;
             
             await _categoryRepository.AddAsync(category);
@@ -150,6 +151,7 @@ namespace itec_mobile_api_final.Forum
             }
             
             category.Id = Guid.NewGuid().ToString();
+            category.UserId = userId;
             category.LastEdited = DateTime.Now;
             
             await _categoryRepository.AddAsync(category);
@@ -167,6 +169,7 @@ namespace itec_mobile_api_final.Forum
 
             topic.CategoryId = id;
             topic.Id = Guid.NewGuid().ToString();
+            topic.UserId = userId;
             topic.Created = DateTime.Now;
             topic.LastEdited = DateTime.Now;
 
