@@ -1,11 +1,10 @@
+using System;
 using System.Threading.Tasks;
-using System.Linq;
 using itec_mobile_api_final.Data;
-using itec_mobile_api_final.Entities;
 using itec_mobile_api_final.Extensions;
+using itec_mobile_api_final.Helpers;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
 namespace itec_mobile_api_final.Forum
@@ -16,43 +15,52 @@ namespace itec_mobile_api_final.Forum
     public class MessagesController: Controller
     {
        
-        private readonly IRepository<MessageEntity> __messageRepository;
-        private readonly UserManager<User> _userManager;
+        private readonly IRepository<MessageEntity> _messagesRepository;
         
-        public MessagesController(ApplicationDbContext context, UserManager<User> userManager)
+        public MessagesController(ApplicationDbContext context)
         {
-            __messageRepository = context.GetRepository<MessageEntity>();
-            _userManager = userManager;
+            _messagesRepository = context.GetRepository<MessageEntity>();
         }
-        
-        [HttpGet]
-        public async Task<IActionResult> GetAll()
-        {
-            var userId = HttpContext.GetCurrentUserId();
-            if (userId is null)
-            {
-                return Unauthorized();
-            }
-            var all = await __messageRepository.GetAllAsync();
-            return Ok(all);
-        }
-        
-        [HttpGet("{id}")]
-        public async Task<IActionResult> GetOne(string id)
-        {
-            var message = await __messageRepository.GetAsync(id);
-            if (message is null)
-            {
-                return NotFound();
-            }
 
+        [HttpPatch("{id}")]
+        public async Task<IActionResult> Update([FromBody] dynamic message , string id)
+        {
             var userId = HttpContext.GetCurrentUserId();
             if (userId is null)
             {
                 return Unauthorized();
             }
             
-            return Ok(message);
+            var existing = await _messagesRepository.GetAsync(id);
+            if (existing is null || existing.UserId != userId)
+            {
+                return NotFound();
+            }
+
+            existing = ReflectionHelper.PatchObject(existing, message);
+            existing.LastEdited = DateTime.Now;
+
+            await _messagesRepository.UpdateAsync(existing);
+            return Ok(existing);
+        }
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> Delete([FromRoute] string id)
+        {
+            var userId = HttpContext.GetCurrentUserId();
+            if (userId is null)
+            {
+                return Unauthorized();
+            }
+            
+            var existing = await _messagesRepository.GetAsync(id);
+            if (existing is null || existing.UserId != userId)
+            {
+                return NotFound();
+            }
+
+            await _messagesRepository.DeleteAsync(existing);
+            return Ok("Message deleted!");
         }
     }
 }
