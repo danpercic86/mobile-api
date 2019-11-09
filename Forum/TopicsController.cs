@@ -77,6 +77,7 @@ namespace itec_mobile_api_final.Forum
             }
             
             existing = ReflectionHelper.PatchObject(existing, topic);
+            existing.LastEdited = DateTime.Now;
             
             await _topicRepository.UpdateAsync(existing);
             return Ok(existing);
@@ -134,6 +135,7 @@ namespace itec_mobile_api_final.Forum
                 return Unauthorized();
             }
 
+            message.TopicId = id;
             message.UserId = userId;
             message.Created = DateTime.Now;
             message.LastEdited = DateTime.Now;    
