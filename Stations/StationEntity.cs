@@ -11,7 +11,7 @@ namespace itec_mobile_api_final.Stations
     {
         public string Name { get; set; }
         public int TotalSockets { get; set; }
-        public int OccupiedSockets { get; set; }
+        public int FreeSockets { get; set; }
         public PointF Location { get; set; }
         [ReadOnly(true)]
         public string OldStationId { get; set; }

@@ -3,11 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using itec_mobile_api_final.Data;
 using itec_mobile_api_final.Extensions;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Configuration.UserSecrets;
 
 namespace itec_mobile_api_final.Stations
 {
@@ -39,6 +35,12 @@ namespace itec_mobile_api_final.Stations
             }
 
             var stations = allAsync.Where(s => s.Deleted == false && s.Old == false);
+
+            if (!stations.Any())
+            {
+                return NotFound();
+            }
+            
 
             return Ok(stations);
         }
@@ -130,7 +132,7 @@ namespace itec_mobile_api_final.Stations
             {
                 Name = existing.Name,
                 TotalSockets = existing.TotalSockets,
-                OccupiedSockets = existing.OccupiedSockets,
+                FreeSockets = existing.FreeSockets,
                 Location = existing.Location,
                 OldStationId = existing.Id,
                 OldStation = existing.OldStation,
@@ -142,6 +144,30 @@ namespace itec_mobile_api_final.Stations
             await _stationRepo.AddAsync(newStation);
 
             return Ok(newStation);
+        }
+
+        [HttpPut("{id}/FreeSockets")]
+        public async Task<IActionResult> UpdateSockets(string id, int freeSocketsValue)
+        {
+            var userId = HttpContext.GetCurrentUserId();
+            if (userId == null)
+            {
+                return Unauthorized();
+            }
+            
+            var existing = await _stationRepo.GetAsync(id);
+
+            if (existing == null || existing.Deleted || existing.Old)
+            {
+                return NotFound();
+            }
+
+            existing.FreeSockets = freeSocketsValue;
+
+            await _stationRepo.UpdateAsync(existing);
+
+            return Ok(existing);
+           
         }
     }
 }
