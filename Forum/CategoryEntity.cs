@@ -6,23 +6,22 @@ using Newtonsoft.Json;
 
 namespace itec_mobile_api_final.Forum
 {
-    public class MessageEntity : Entity
+    public class CategoryEntity : Entity
     {    
         
         [ReadOnly(true)]
         public string UserId { get; set; }
+        
         [JsonIgnore]
         [ForeignKey(nameof(UserId))]
         public User User { get; set; }
         [ReadOnly(true)]
-        public  string TopicId { get; set; }
+        public string ParentCategoryId { get; set; }
         [JsonIgnore]
-        [ForeignKey(nameof(TopicId))]
-        public TopicEntity Topic { get; set; }
+        [ForeignKey(nameof(ParentCategoryId))]
+        public  CategoryEntity ParentCategory { get; set; }
         
-        public string Message { get; set; }
-        [ReadOnly(true)]
-        public DateTime Created { get; set; }
+        public string Title { get; set; }
         [ReadOnly(true)]
         public DateTime LastEdited { get; set; }
     }

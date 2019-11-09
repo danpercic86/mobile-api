@@ -18,13 +18,13 @@ namespace itec_mobile_api_final.Forum
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class CategoryController : Controller
     {
-        private readonly IRepository<CategoryForumEntity> _categoryRepository;
-        private readonly UserManager<User> _userManager;
+        private readonly IRepository<CategoryEntity> _categoryRepository;
+        private readonly IRepository<TopicEntity> _topicRepository;
 
-        public CategoryController(ApplicationDbContext context, UserManager<User> userManager)
+        public CategoryController(ApplicationDbContext context)
         {
-            _categoryRepository = context.GetRepository<CategoryForumEntity>();
-            _userManager = userManager;
+            _categoryRepository = context.GetRepository<CategoryEntity>();
+            _topicRepository = context.GetRepository<TopicEntity>();
         }
 
         [HttpGet]
@@ -36,68 +36,142 @@ namespace itec_mobile_api_final.Forum
                 return Unauthorized();
             }
 
-            var all = await _categoryRepository.GetAllAsync();
-            return Ok(all);
+            var allAsync = await _categoryRepository.GetAllAsync();
+            var categories = allAsync.Where(c => c.ParentCategoryId == null);
+            if (!categories.Any())
+            {
+                return NotFound();
+            }
+            
+            return Ok(categories);
         }
 
         [HttpGet("{id}")]
         public async Task<IActionResult> GetOne(string id)
         {
+            var userId = HttpContext.GetCurrentUserId();
+            if (userId is null)
+            {
+                return Unauthorized();
+            }
+            
             var category = await _categoryRepository.GetAsync(id);
             if (category is null)
             {
                 return NotFound();
             }
 
-            var userId = HttpContext.GetCurrentUserId();
-            if (userId is null)
-            {
-                return Unauthorized();
-            }
-
             return Ok(category);
         }
         
-        [HttpGet("{id}/categories")]
-        public async Task<IActionResult> Get( string id)
+        [HttpGet("{id}/Categories")]
+        public async Task<IActionResult> GetChildCategories(string id)
         {
-            var category = _categoryRepository.Queryable.Where(a=>a.CategoryId == id).ToArray();
-            
             var userId = HttpContext.GetCurrentUserId();
             if (userId is null)
             {
                 return Unauthorized();
             }
 
-            return Ok(category);
+            var categories = _categoryRepository.Queryable.Where(a => a.ParentCategoryId == id);
+            if (!categories.Any())
+            {
+                return NotFound();
+            }
+
+            return Ok(categories);
+        }
+        
+        [HttpGet("{id}/Topics")]
+        public async Task<IActionResult> GetChildTopics(string id)
+        {
+            var userId = HttpContext.GetCurrentUserId();
+            if (userId is null)
+            {
+                return Unauthorized();
+            }
+
+            var topics = _topicRepository.Queryable.Where(t => t.CategoryId == id);
+            if (!topics.Any())
+            {
+                return NotFound();
+            }
+
+            return Ok(topics);
         }
 
         [HttpPost]
-        public async Task<IActionResult> Add([FromBody] CategoryForumEntity category)
+        public async Task<IActionResult> Add([FromBody] CategoryEntity category)
         {
             var userId = HttpContext.GetCurrentUserId();
-            
-            category.Id = Guid.NewGuid().ToString();
             if (userId is null)
             {
                 return Unauthorized();
             }
-
-            if (!string.IsNullOrWhiteSpace(category.CategoryId))
+            
+            if (!string.IsNullOrWhiteSpace(category.ParentCategoryId))
             {
-                if (!Guid.TryParse(category.CategoryId, out _))
+                if (!Guid.TryParse(category.ParentCategoryId, out _))
                 {
                     return BadRequest("Category id invalid");
                 }
             }
             else
             {
-                category.CategoryId = null;
+                category.ParentCategoryId = null;
             }
 
             category.Id = Guid.NewGuid().ToString();
+            category.LastEdited = DateTime.Now;
+            
             await _categoryRepository.AddAsync(category);
             return Ok(category);
+        }
+
+        [HttpPost("{id}/Category")]
+        public async Task<IActionResult> AddChildCategory([FromBody] CategoryEntity category, [FromRoute] string id)
+        {
+            var userId = HttpContext.GetCurrentUserId();
+            if (userId is null)
+            {
+                return Unauthorized();
+            }
+            
+            if (!string.IsNullOrWhiteSpace(category.ParentCategoryId))
+            {
+                if (!Guid.TryParse(category.ParentCategoryId, out _))
+                {
+                    return BadRequest("Category id invalid");
+                }
+            }
+            else
+            {
+                category.ParentCategoryId = id;
+            }
+            
+            category.Id = Guid.NewGuid().ToString();
+            category.LastEdited = DateTime.Now;
+            
+            await _categoryRepository.AddAsync(category);
+            return Ok(category);
+        }
+
+        [HttpPost("{id}/Topic")]
+        public async Task<IActionResult> AddChildTopic([FromBody] TopicEntity topic, [FromRoute] string id)
+        {
+            var userId = HttpContext.GetCurrentUserId();
+            if (userId is null)
+            {
+                return Unauthorized();
+            }
+
+            topic.CategoryId = id;
+            topic.Id = Guid.NewGuid().ToString();
+            topic.Created = DateTime.Now;
+            topic.LastEdited = DateTime.Now;
+
+            await _topicRepository.AddAsync(topic);
+            return Ok(topic);
         }
     }
 }

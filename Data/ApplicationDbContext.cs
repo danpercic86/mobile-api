@@ -17,7 +17,7 @@ namespace itec_mobile_api_final.Data
         }
         public DbSet<StationEntity> StationEntities { get; set; }
         public DbSet<CarEntity> CarEntities { get; set; }
-        public DbSet<CategoryForumEntity> CategoryEntities { get; set;}
+        public DbSet<CategoryEntity> CategoryEntities { get; set;}
         public DbSet<VoteEntity> VoteEntities { get; set; }
         public DbSet<MessageEntity> MessageEntities { get; set; }
         public DbSet<TopicEntity> TopicEntities { get; set; }
