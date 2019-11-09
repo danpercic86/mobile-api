@@ -2,6 +2,7 @@
 using itec_mobile_api_final.Cars;
 using itec_mobile_api_final.Entities;
 using itec_mobile_api_final.Stations;
+using itec_mobile_api_final.Votes;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
@@ -15,6 +16,7 @@ namespace itec_mobile_api_final.Data
         }
         public DbSet<StationEntity> StationEntities { get; set; }
         public DbSet<CarEntity> CarEntities { get; set; }
+        public DbSet<VoteEntity> VoteEntities { get; set; }
         
         public IRepository<T> GetRepository<T>() where T: Entity
         {

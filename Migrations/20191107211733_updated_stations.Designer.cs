@@ -2,15 +2,17 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using itec_mobile_api_final.Data;
 
 namespace itec_mobile_api_final.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20191107211733_updated_stations")]
+    partial class updated_stations
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -205,12 +207,12 @@ namespace itec_mobile_api_final.Migrations
 
                     b.Property<bool>("Deleted");
 
-                    b.Property<int>("FreeSockets");
-
                     b.Property<string>("Location")
                         .IsRequired();
 
                     b.Property<string>("Name");
+
+                    b.Property<int>("OccupiedSockets");
 
                     b.Property<bool>("Old");
 
@@ -227,28 +229,6 @@ namespace itec_mobile_api_final.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("StationEntities");
-                });
-
-            modelBuilder.Entity("itec_mobile_api_final.Votes.VoteEntity", b =>
-                {
-                    b.Property<string>("Id")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<bool>("Deleted");
-
-                    b.Property<string>("StationId");
-
-                    b.Property<string>("UserId");
-
-                    b.Property<bool?>("Vote");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("StationId");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("VoteEntities");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -308,17 +288,6 @@ namespace itec_mobile_api_final.Migrations
                     b.HasOne("itec_mobile_api_final.Stations.StationEntity", "OldStation")
                         .WithMany()
                         .HasForeignKey("OldStationId");
-
-                    b.HasOne("itec_mobile_api_final.Entities.User", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId");
-                });
-
-            modelBuilder.Entity("itec_mobile_api_final.Votes.VoteEntity", b =>
-                {
-                    b.HasOne("itec_mobile_api_final.Stations.StationEntity", "Station")
-                        .WithMany()
-                        .HasForeignKey("StationId");
 
                     b.HasOne("itec_mobile_api_final.Entities.User", "User")
                         .WithMany()
