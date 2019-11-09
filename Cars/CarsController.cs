@@ -1,8 +1,10 @@
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 using itec_mobile_api_final.Data;
 using itec_mobile_api_final.Entities;
 using itec_mobile_api_final.Extensions;
+using itec_mobile_api_final.Helpers;
 using itec_mobile_api_final.Models.Requests;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
@@ -83,29 +85,24 @@ namespace itec_mobile_api_final.Cars
         }
 
         [HttpPatch("{id}")]
-        public async Task<IActionResult> Patch([FromBody]CreateCarRequest car, [FromRoute]string id)
+        public async Task<IActionResult> Patch([FromBody] dynamic car1, [FromRoute] string id)
         {
-            var existing = await _carRepository.GetAsync(id);
-            if (existing == null)
+            var car = _carRepository.GetAsync(id).Result;
+            if (car == null) return NotFound();
+
+            try
             {
-                return NotFound();
+               car = ReflectionHelper.PatchObject(car, car1);
             }
-            
-            var userId = HttpContext.GetCurrentUserId();
-            if (existing.UserId != userId)
+            catch (Exception e)
             {
-                return Unauthorized();
+                Console.WriteLine(e);    
+                throw;
             }
 
-            existing.Model = car.Model;
-            existing.Autonomy = car.Autonomy;
-            existing.Company = car.Company;
-            existing.Year = car.Year;
-            existing.BatteryLeft = car.BatteryLeft;
-            existing.LastTechRevision = car.LastTechRevision;
+            await _carRepository.UpdateAsync(car);
+            return Ok(car);
             
-            await _carRepository.UpdateAsync(existing);
-            return Ok(existing);
         }
 
         [HttpDelete("{id}")]
