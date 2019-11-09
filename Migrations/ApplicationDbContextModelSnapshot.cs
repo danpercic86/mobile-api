@@ -198,18 +198,16 @@ namespace itec_mobile_api_final.Migrations
                     b.ToTable("AspNetUsers");
                 });
 
-            modelBuilder.Entity("itec_mobile_api_final.Forum.CategoryForumEntity", b =>
+            modelBuilder.Entity("itec_mobile_api_final.Forum.CategoryEntity", b =>
                 {
                     b.Property<string>("Id")
                         .ValueGeneratedOnAdd();
-
-                    b.Property<string>("CategoryId");
 
                     b.Property<bool>("Deleted");
 
                     b.Property<DateTime>("LastEdited");
 
-                    b.Property<DateTime>("LastTechRevision");
+                    b.Property<string>("ParentId");
 
                     b.Property<string>("Title");
 
@@ -217,7 +215,7 @@ namespace itec_mobile_api_final.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CategoryId");
+                    b.HasIndex("ParentId");
 
                     b.HasIndex("UserId");
 
@@ -383,11 +381,11 @@ namespace itec_mobile_api_final.Migrations
                         .HasForeignKey("UserId");
                 });
 
-            modelBuilder.Entity("itec_mobile_api_final.Forum.CategoryForumEntity", b =>
+            modelBuilder.Entity("itec_mobile_api_final.Forum.CategoryEntity", b =>
                 {
-                    b.HasOne("itec_mobile_api_final.Forum.CategoryForumEntity", "ParentCategory")
+                    b.HasOne("itec_mobile_api_final.Forum.CategoryEntity", "Parent")
                         .WithMany()
-                        .HasForeignKey("CategoryId");
+                        .HasForeignKey("ParentId");
 
                     b.HasOne("itec_mobile_api_final.Entities.User", "User")
                         .WithMany()
@@ -407,7 +405,7 @@ namespace itec_mobile_api_final.Migrations
 
             modelBuilder.Entity("itec_mobile_api_final.Forum.TopicEntity", b =>
                 {
-                    b.HasOne("itec_mobile_api_final.Forum.CategoryForumEntity", "Category")
+                    b.HasOne("itec_mobile_api_final.Forum.CategoryEntity", "Category")
                         .WithMany()
                         .HasForeignKey("CategoryId");
 

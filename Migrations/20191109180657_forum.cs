@@ -14,17 +14,16 @@ namespace itec_mobile_api_final.Migrations
                     Id = table.Column<string>(nullable: false),
                     Deleted = table.Column<bool>(nullable: false),
                     UserId = table.Column<string>(nullable: true),
-                    LastEdited = table.Column<DateTime>(nullable: false),
-                    LastTechRevision = table.Column<DateTime>(nullable: false),
+                    ParentId = table.Column<string>(nullable: true),
                     Title = table.Column<string>(nullable: true),
-                    CategoryId = table.Column<string>(nullable: true)
+                    LastEdited = table.Column<DateTime>(nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_CategoryEntities", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_CategoryEntities_CategoryEntities_CategoryId",
-                        column: x => x.CategoryId,
+                        name: "FK_CategoryEntities_CategoryEntities_ParentId",
+                        column: x => x.ParentId,
                         principalTable: "CategoryEntities",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
@@ -45,9 +44,9 @@ namespace itec_mobile_api_final.Migrations
                     UserId = table.Column<string>(nullable: true),
                     CategoryId = table.Column<string>(nullable: true),
                     Title = table.Column<string>(nullable: true),
+                    Content = table.Column<string>(nullable: true),
                     Created = table.Column<DateTime>(nullable: false),
-                    LastEdited = table.Column<DateTime>(nullable: false),
-                    Content = table.Column<string>(nullable: true)
+                    LastEdited = table.Column<DateTime>(nullable: false)
                 },
                 constraints: table =>
                 {
@@ -96,9 +95,9 @@ namespace itec_mobile_api_final.Migrations
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_CategoryEntities_CategoryId",
+                name: "IX_CategoryEntities_ParentId",
                 table: "CategoryEntities",
-                column: "CategoryId");
+                column: "ParentId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_CategoryEntities_UserId",

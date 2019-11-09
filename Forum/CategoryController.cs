@@ -37,7 +37,7 @@ namespace itec_mobile_api_final.Forum
             }
 
             var allAsync = await _categoryRepository.GetAllAsync();
-            var categories = allAsync.Where(c => c.ParentCategoryId == null);
+            var categories = allAsync.Where(c => c.ParentId == null);
             if (!categories.Any())
             {
                 return NotFound();
@@ -73,7 +73,7 @@ namespace itec_mobile_api_final.Forum
                 return Unauthorized();
             }
 
-            var categories = _categoryRepository.Queryable.Where(a => a.ParentCategoryId == id);
+            var categories = _categoryRepository.Queryable.Where(a => a.ParentId == id);
             if (!categories.Any())
             {
                 return NotFound();
@@ -109,16 +109,16 @@ namespace itec_mobile_api_final.Forum
                 return Unauthorized();
             }
             
-            if (!string.IsNullOrWhiteSpace(category.ParentCategoryId))
+            if (!string.IsNullOrWhiteSpace(category.ParentId))
             {
-                if (!Guid.TryParse(category.ParentCategoryId, out _))
+                if (!Guid.TryParse(category.ParentId, out _))
                 {
                     return BadRequest("Category id invalid");
                 }
             }
             else
             {
-                category.ParentCategoryId = null;
+                category.ParentId = null;
             }
 
             category.Id = Guid.NewGuid().ToString();
@@ -137,16 +137,16 @@ namespace itec_mobile_api_final.Forum
                 return Unauthorized();
             }
             
-            if (!string.IsNullOrWhiteSpace(category.ParentCategoryId))
+            if (!string.IsNullOrWhiteSpace(category.ParentId))
             {
-                if (!Guid.TryParse(category.ParentCategoryId, out _))
+                if (!Guid.TryParse(category.ParentId, out _))
                 {
                     return BadRequest("Category id invalid");
                 }
             }
             else
             {
-                category.ParentCategoryId = id;
+                category.ParentId = id;
             }
             
             category.Id = Guid.NewGuid().ToString();

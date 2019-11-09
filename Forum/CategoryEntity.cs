@@ -16,10 +16,10 @@ namespace itec_mobile_api_final.Forum
         [ForeignKey(nameof(UserId))]
         public User User { get; set; }
         [ReadOnly(true)]
-        public string ParentCategoryId { get; set; }
+        public string ParentId { get; set; }
         [JsonIgnore]
-        [ForeignKey(nameof(ParentCategoryId))]
-        public  CategoryEntity ParentCategory { get; set; }
+        [ForeignKey(nameof(ParentId))]
+        public CategoryEntity Parent { get; set; }
         
         public string Title { get; set; }
         [ReadOnly(true)]
