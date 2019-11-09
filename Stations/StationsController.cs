@@ -1,22 +1,26 @@
 ﻿using System;
 using System.Linq;
+using System.Security.Policy;
 using System.Threading.Tasks;
 using itec_mobile_api_final.Data;
 using itec_mobile_api_final.Extensions;
+using itec_mobile_api_final.Votes;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace itec_mobile_api_final.Stations
 {
     [Route("api/[controller]")]
     [ApiController]
-    //[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class StationsController : Controller
     {
         private readonly IRepository<StationEntity> _stationRepo;
+        private readonly IRepository<VoteEntity> _voteRepo;
 
         public StationsController(ApplicationDbContext context)
         {
             _stationRepo = context.GetRepository<StationEntity>();
+            _voteRepo = context.GetRepository<VoteEntity>();
         }
 
         [HttpGet]
@@ -167,7 +171,91 @@ namespace itec_mobile_api_final.Stations
             await _stationRepo.UpdateAsync(existing);
 
             return Ok(existing);
-           
+        }
+
+        [HttpGet("{id}/Votes")]
+        public async Task<IActionResult> GetAllVotes(string id)
+        {
+            var userId = HttpContext.GetCurrentUserId();
+            if (userId == null)
+            {
+                return Unauthorized();
+            }
+
+            var allAsync = await _voteRepo.GetAllAsync();
+            if (!allAsync.Any())
+            {
+                return NotFound();
+            }
+            
+            var votes = allAsync.Where(a => a.StationId == id);
+            if (!votes.Any())
+            {
+                return NotFound();
+            }
+
+            return Ok(votes);
+        }
+
+        [HttpGet("{id}/Vote")]
+        public async Task<IActionResult> GetUserVote(string id)
+        {
+            var userId = HttpContext.GetCurrentUserId();
+            if (userId == null)
+            {
+                return Unauthorized();
+            }
+            
+            var allAsync = await _voteRepo.GetAllAsync();
+            if (!allAsync.Any())
+            {
+                return NotFound();
+            }
+            
+            var vote = await allAsync.FirstOrDefaultAsync(a => a.StationId == id && a.UserId == userId);
+            if (vote is null)
+            {
+                return NotFound();
+            }
+
+            return Ok(vote);
+        }
+
+        [HttpPut("{id}/Vote")]
+        public async Task<IActionResult> UpdateVote(string id, bool? newVote)
+        {
+            var userId = HttpContext.GetCurrentUserId();
+            if (userId == null)
+            {
+                return Unauthorized();
+            }
+
+            var vote = default(VoteEntity);
+            
+            var allAsync = await _voteRepo.GetAllAsync();
+            if (!allAsync.Any())
+            {
+                vote = new VoteEntity {StationId = id, UserId = userId, Vote = newVote};
+
+                await _voteRepo.AddAsync(vote);
+
+                return Ok(vote);
+            }
+            
+            vote = await allAsync.FirstOrDefaultAsync(a => a.StationId == id && a.UserId == userId);
+            if (vote is null)
+            {
+                vote = new VoteEntity {StationId = id, UserId = userId, Vote = newVote};
+
+                await _voteRepo.AddAsync(vote);
+
+                return Ok(vote);
+            }
+
+            vote.Vote = newVote;
+            await  _voteRepo.UpdateAsync(vote);
+
+            return Ok(vote);
         }
     }
 }
