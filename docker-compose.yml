@@ -1,0 +1,42 @@
+# local use only; server deployment uses a docker-compose file that is not in git
+# you will find that file in /home/docker/${project}/...
+
+version: '3.1'
+services:
+  netcoreapp:
+    image: netcoreapp-api-image
+    build: .
+    container_name: itec-mobile-api
+    restart: always
+    environment:
+      - NETCORE_USER_UID=69
+      - TZ=Europe/Bucharest
+      - DB_SERVER=db
+      - DB_PORT=3306
+      - DB_USER=root
+      - DB_PASSWORD=njvhebnEUHUEHGUNENbuehvNIOJFOJVEkeboboeiejEONB
+      - DB_DATABASE=mobile_api
+      - CONTENT_DIRECTORY=/app/content
+      - LOGS_DIRECTORY=/app/logs
+      - TEMPORARY_VIEWS_PATH=
+      - ASPNETCORE_URLS=http://+:5030
+    env_file:
+      - ./conf.vars
+    ports:
+      - $PORT:5030
+    volumes:
+      - ../docker-volumes/content:/app/content
+      - ../docker-volumes/logs:/app/logs
+  
+  db:
+    image: mariadb
+    environment:
+      - MYSQL_ROOT_PASSWORD=njvhebnEUHUEHGUNENbuehvNIOJFOJVEkeboboeiejEONB
+      - MYSQL_DATABASE=mobile_api
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    environment:
+      - PMA_HOST=db
+    ports:
+      - 2${PORT}:80
