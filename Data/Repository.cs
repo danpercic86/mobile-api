@@ -27,7 +27,7 @@ namespace itec_mobile_api_final.Data
 
         public async Task<IQueryable<T>> GetAllAsync()
         {
-            return await new Task<IQueryable<T>>(() => DbSet);
+            return await Task.Run(() => DbSet);
         }
 
         public async Task AddAsync(T entity)
@@ -50,7 +50,7 @@ namespace itec_mobile_api_final.Data
 
         public async Task DeleteAsync(int id)
         {
-            await this.DeleteAsync(await DbSet.FindAsync(id));
+            await DeleteAsync(await DbSet.FindAsync(id));
         }
 
         public async Task Save()
