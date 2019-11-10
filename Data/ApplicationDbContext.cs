@@ -1,6 +1,7 @@
 ﻿using System.Drawing;
 using itec_mobile_api_final.Cars;
 using itec_mobile_api_final.Entities;
+using itec_mobile_api_final.Forum;
 using itec_mobile_api_final.Stations;
 using itec_mobile_api_final.Votes;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
@@ -16,8 +17,12 @@ namespace itec_mobile_api_final.Data
         }
         public DbSet<StationEntity> StationEntities { get; set; }
         public DbSet<CarEntity> CarEntities { get; set; }
+        public DbSet<CategoryEntity> CategoryEntities { get; set;}
         public DbSet<VoteEntity> VoteEntities { get; set; }
-        
+        public DbSet<MessageEntity> MessageEntities { get; set; }
+        public DbSet<TopicEntity> TopicEntities { get; set; }
+
+
         public IRepository<T> GetRepository<T>() where T: Entity
         {
             return new Repository<T>(this);
