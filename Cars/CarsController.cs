@@ -2,14 +2,13 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using itec_mobile_api_final.Data;
-using itec_mobile_api_final.Entities;
 using itec_mobile_api_final.Extensions;
 using itec_mobile_api_final.Helpers;
 using itec_mobile_api_final.Models.Requests;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace itec_mobile_api_final.Cars
 {
@@ -29,74 +28,46 @@ namespace itec_mobile_api_final.Cars
         public async Task<IActionResult> GetAll()
         {
             var userId = HttpContext.GetCurrentUserId();
-            if (userId is null)
-            {
-                return Unauthorized();
-            }
-            
-            var all = await _carRepository.GetAllAsync();
-            var cars = all.Where(c => c.UserId == userId);
+            if (userId is null) return Unauthorized();
+
+            var cars = await _carRepository.Queryable.Where(c => c.UserId == userId).ToListAsync();
+            if (cars is null) return NotFound();
 
             return Ok(cars);
         }
 
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetOne(string id)
+        public async Task<IActionResult> GetOne([FromRoute] string id)
         {
-            var car = await _carRepository.GetAsync(id);
-            if (car is null)
-            {
-                return NotFound();
-            }
-
             var userId = HttpContext.GetCurrentUserId();
-            if (car.UserId != userId)
-            {
-                return Unauthorized();
-            }
-            
+            if (userId is null) return Unauthorized();
+
+            var car = await _carRepository.GetAsync(id);
+            if (car is null || car.UserId != userId) return NotFound();
+
             return Ok(car);
         }
 
         [HttpPost]
-        public async Task<IActionResult> Post([FromBody]CreateCarRequest car)
+        public async Task<IActionResult> Post([FromBody] CarEntity car)
         {
             var userId = HttpContext.GetCurrentUserId();
-            if (userId is null)
-            {
-                return Unauthorized();
-            }
+            if (userId is null) return Unauthorized();
+
+            car.UserId = userId;
+            car.Id = Guid.NewGuid().ToString();
             
-            var newCar = new CarEntity
-            {
-                Autonomy = car.Autonomy,
-                Company = car.Company,
-                Model = car.Model,
-                Year = car.Year,
-                BatteryLeft = car.BatteryLeft,
-                LastTechRevision = car.LastTechRevision,
-                UserId = HttpContext.GetCurrentUserId(),
-            };
-            
-            await _carRepository.AddAsync(newCar);
-            return CreatedAtAction(nameof(GetOne), new {id = newCar.Id}, newCar);
+            await _carRepository.AddAsync(car);
+            return CreatedAtAction(nameof(GetOne), new {id = car.Id}, car);
         }
 
         [HttpPatch("{id}")]
         public async Task<IActionResult> Patch([FromBody] dynamic car1, [FromRoute] string id)
         {
             var car = _carRepository.GetAsync(id).Result;
-            if (car == null) return NotFound();
+            if (car is null) return NotFound();
 
-            try
-            {
-               car = ReflectionHelper.PatchObject(car, car1);
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e);    
-                throw;
-            }
+            car = ReflectionHelper.PatchObject(car, car1);
 
             await _carRepository.UpdateAsync(car);
             return Ok(car);
@@ -104,20 +75,14 @@ namespace itec_mobile_api_final.Cars
         }
 
         [HttpDelete("{id}")]
-        public async Task<IActionResult> Delete(string id)
+        public async Task<IActionResult> Delete([FromRoute] string id)
         {
-            var car = await _carRepository.GetAsync(id);
-            if (car == null)
-            {
-                return NotFound();
-            }
-            
             var userId = HttpContext.GetCurrentUserId();
-            if (car.UserId != userId)
-            {
-                return Unauthorized();
-            }
+            if (userId is null) return Unauthorized();
             
+            var car = await _carRepository.GetAsync(id);
+            if (car is null || car.UserId != userId) return NotFound();
+
             await _carRepository.DeleteAsync(car);
             return Ok("Car deleted!");
         }

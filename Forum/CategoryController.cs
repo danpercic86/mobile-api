@@ -75,7 +75,7 @@ namespace itec_mobile_api_final.Forum
                 return Unauthorized();
             }
 
-            var categories = _categoryRepository.Queryable.Where(a => a.ParentId == id);
+            var categories = await _categoryRepository.Queryable.Where(a => a.ParentId == id).ToListAsync();
             if (!categories.Any())
             {
                 return NotFound();
