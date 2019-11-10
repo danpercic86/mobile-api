@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace itec_mobile_api_final.Data
 {
-    public class Repository<T> : IRepository<T> where T: Entity
+    public class Repository<T> : IRepository<T> where T : Entity
     {
         protected readonly DbContext Context;
         protected DbSet<T> DbSet;
@@ -19,14 +19,15 @@ namespace itec_mobile_api_final.Data
             DbSet = context.Set<T>();
             _queryable = DbSet;
         }
+
         public async Task<T> GetAsync<TKey>(TKey id)
         {
             return await DbSet.FindAsync(id);
         }
 
         public async Task<IQueryable<T>> GetAllAsync()
-        { 
-            return DbSet;
+        {
+            return await new Task<IQueryable<T>>(() => DbSet);
         }
 
         public async Task AddAsync(T entity)
@@ -51,6 +52,7 @@ namespace itec_mobile_api_final.Data
         {
             await this.DeleteAsync(await DbSet.FindAsync(id));
         }
+
         public async Task Save()
         {
             await Context.SaveChangesAsync();
