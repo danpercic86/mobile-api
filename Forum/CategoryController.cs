@@ -2,14 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Linq;
-using itec_mobile_api_final.Cars;
 using itec_mobile_api_final.Data;
-using itec_mobile_api_final.Entities;
 using itec_mobile_api_final.Extensions;
-using itec_mobile_api_final.Stations;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -33,71 +29,46 @@ namespace itec_mobile_api_final.Forum
         public async Task<IActionResult> GetAll()
         {
             var userId = HttpContext.GetCurrentUserId();
-            if (userId is null)
-            {
-                return Unauthorized();
-            }
+            if (userId is null) return Unauthorized();
 
-            var allAsync = await _categoryRepository.GetAllAsync();
-            var categories = allAsync.Where(c => c.ParentId == null);
-            if (!categories.Any())
-            {
-                return NotFound();
-            }
-            
+            var categories = await _categoryRepository.Queryable.Where(c => c.ParentId == null).ToListAsync();
+            if (!categories.Any()) return NotFound();
+
             return Ok(categories);
         }
 
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetOne(string id)
+        public async Task<IActionResult> GetOne([FromRoute] string id)
         {
             var userId = HttpContext.GetCurrentUserId();
-            if (userId is null)
-            {
-                return Unauthorized();
-            }
-            
+            if (userId is null) return Unauthorized();
+
             var category = await _categoryRepository.GetAsync(id);
-            if (category is null)
-            {
-                return NotFound();
-            }
+            if (category is null) return NotFound();
 
             return Ok(category);
         }
         
         [HttpGet("{id}/Categories")]
-        public async Task<IActionResult> GetChildCategories(string id)
+        public async Task<IActionResult> GetChildCategories([FromRoute] string id)
         {
             var userId = HttpContext.GetCurrentUserId();
-            if (userId is null)
-            {
-                return Unauthorized();
-            }
-
+            if (userId is null) return Unauthorized();
+            
             var categories = await _categoryRepository.Queryable.Where(a => a.ParentId == id).ToListAsync();
-            if (!categories.Any())
-            {
-                return NotFound();
-            }
+            if (!categories.Any()) return NotFound();
 
             return Ok(categories);
         }
         
         [HttpGet("{id}/Topics")]
-        public async Task<IActionResult> GetChildTopics(string id)
+        public async Task<IActionResult> GetChildTopics([FromRoute] string id)
         {
             var userId = HttpContext.GetCurrentUserId();
-            if (userId is null)
-            {
-                return Unauthorized();
-            }
+            if (userId is null) return Unauthorized();
 
-            var topics = await new Task<IEnumerable<TopicEntity>>(() => _topicRepository.Queryable.Where(t => t.CategoryId == id));
-            if (!topics.Any())
-            {
-                return NotFound();
-            }
+            var topics = await _topicRepository.Queryable.Where(t => t.CategoryId == id).ToListAsync();
+            if (!topics.Any()) return NotFound();
 
             return Ok(topics);
         }
@@ -106,13 +77,10 @@ namespace itec_mobile_api_final.Forum
         public async Task<IActionResult> Add([FromBody] CategoryEntity category)
         {
             var userId = HttpContext.GetCurrentUserId();
-            if (userId is null)
-            {
-                return Unauthorized();
-            }
+            if (userId is null) return Unauthorized();
 
-            category.ParentId = null;
             category.Id = Guid.NewGuid().ToString();
+            category.ParentId = null;
             category.UserId = userId;
             category.LastEdited = DateTime.Now;
             
@@ -124,13 +92,10 @@ namespace itec_mobile_api_final.Forum
         public async Task<IActionResult> AddChildCategory([FromBody] CategoryEntity category, [FromRoute] string id)
         {
             var userId = HttpContext.GetCurrentUserId();
-            if (userId is null)
-            {
-                return Unauthorized();
-            }
+            if (userId is null) return Unauthorized();
 
-            category.ParentId = id;
             category.Id = Guid.NewGuid().ToString();
+            category.ParentId = id;
             category.UserId = userId;
             category.LastEdited = DateTime.Now;
             
@@ -142,13 +107,10 @@ namespace itec_mobile_api_final.Forum
         public async Task<IActionResult> AddChildTopic([FromBody] TopicEntity topic, [FromRoute] string id)
         {
             var userId = HttpContext.GetCurrentUserId();
-            if (userId is null)
-            {
-                return Unauthorized();
-            }
+            if (userId is null) return Unauthorized();
 
-            topic.CategoryId = id;
             topic.Id = Guid.NewGuid().ToString();
+            topic.CategoryId = id;
             topic.UserId = userId;
             topic.Created = DateTime.Now;
             topic.LastEdited = DateTime.Now;
