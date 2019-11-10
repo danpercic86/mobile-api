@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Linq;
 using itec_mobile_api_final.Cars;
@@ -10,6 +11,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace itec_mobile_api_final.Forum
 {
@@ -91,7 +93,7 @@ namespace itec_mobile_api_final.Forum
                 return Unauthorized();
             }
 
-            var topics = _topicRepository.Queryable.Where(t => t.CategoryId == id);
+            var topics = await new Task<IEnumerable<TopicEntity>>(() => _topicRepository.Queryable.Where(t => t.CategoryId == id));
             if (!topics.Any())
             {
                 return NotFound();
@@ -108,19 +110,8 @@ namespace itec_mobile_api_final.Forum
             {
                 return Unauthorized();
             }
-            
-            if (!string.IsNullOrWhiteSpace(category.ParentId))
-            {
-                if (!Guid.TryParse(category.ParentId, out _))
-                {
-                    return BadRequest("Category id invalid");
-                }
-            }
-            else
-            {
-                category.ParentId = null;
-            }
 
+            category.ParentId = null;
             category.Id = Guid.NewGuid().ToString();
             category.UserId = userId;
             category.LastEdited = DateTime.Now;
@@ -137,19 +128,8 @@ namespace itec_mobile_api_final.Forum
             {
                 return Unauthorized();
             }
-            
-            if (!string.IsNullOrWhiteSpace(category.ParentId))
-            {
-                if (!Guid.TryParse(category.ParentId, out _))
-                {
-                    return BadRequest("Category id invalid");
-                }
-            }
-            else
-            {
-                category.ParentId = id;
-            }
-            
+
+            category.ParentId = id;
             category.Id = Guid.NewGuid().ToString();
             category.UserId = userId;
             category.LastEdited = DateTime.Now;

@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Linq;
-using System.Security.Policy;
 using System.Threading.Tasks;
 using itec_mobile_api_final.Data;
 using itec_mobile_api_final.Extensions;
+using itec_mobile_api_final.Helpers;
 using itec_mobile_api_final.Votes;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
@@ -35,25 +35,17 @@ namespace itec_mobile_api_final.Stations
                 return Unauthorized();
             }
 
-            var allAsync = await _stationRepo.GetAllAsync();
-            if (allAsync == null)
-            {
-                return NotFound();
-            }
-
-            var stations = allAsync.Where(s => s.Deleted == false && s.Old == false);
-
+            var stations = await _stationRepo.Queryable.Where(s => s.Deleted == false && s.Old == false).ToListAsync();
             if (!stations.Any())
             {
                 return NotFound();
             }
-            
 
             return Ok(stations);
         }
 
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetOne(string id)
+        public async Task<IActionResult> GetOne([FromRoute]string id)
         {
             var userId = HttpContext.GetCurrentUserId();
             if (userId == null)
@@ -87,8 +79,8 @@ namespace itec_mobile_api_final.Stations
             {
                 return Unauthorized();
             }
+            
             station.Id = Guid.NewGuid().ToString();
-
             station.UserId = userId;
 
             await _stationRepo.AddAsync(station);
@@ -97,7 +89,7 @@ namespace itec_mobile_api_final.Stations
         }
 
         [HttpPost("{id}/Edit")]
-        public async Task<IActionResult> Edit(StationEntity stationEntity, [FromRoute] string id)
+        public async Task<IActionResult> Edit([FromBody] StationEntity stationEntity, [FromRoute] string id)
         {
             var userId = HttpContext.GetCurrentUserId();
             if (userId == null)
@@ -110,7 +102,8 @@ namespace itec_mobile_api_final.Stations
             {
                 return NotFound();
             }
-
+    
+            stationEntity.Id = Guid.NewGuid().ToString();
             stationEntity.OldStationId = existing.Id;
             stationEntity.UserId = userId;
             existing.Old = true;
@@ -130,7 +123,6 @@ namespace itec_mobile_api_final.Stations
             }
             
             var existing = await _stationRepo.GetAsync(id);
-
             if (existing == null || existing.Deleted || existing.Old)
             {
                 return NotFound();
@@ -138,6 +130,7 @@ namespace itec_mobile_api_final.Stations
 
             var newStation = new StationEntity
             {
+                Id = Guid.NewGuid().ToString(),
                 Name = existing.Name,
                 TotalSockets = existing.TotalSockets,
                 FreeSockets = existing.FreeSockets,
@@ -155,7 +148,7 @@ namespace itec_mobile_api_final.Stations
         }
 
         [HttpPut("{id}/FreeSockets")]
-        public async Task<IActionResult> UpdateSockets(string id, int freeSocketsValue)
+        public async Task<IActionResult> UpdateSockets([FromRoute] string id, int freeSocketsValue)
         {
             var userId = HttpContext.GetCurrentUserId();
             if (userId == null)
@@ -164,7 +157,6 @@ namespace itec_mobile_api_final.Stations
             }
             
             var existing = await _stationRepo.GetAsync(id);
-
             if (existing == null || existing.Deleted || existing.Old)
             {
                 return NotFound();
@@ -178,7 +170,7 @@ namespace itec_mobile_api_final.Stations
         }
 
         [HttpGet("{id}/Votes")]
-        public async Task<IActionResult> GetAllVotes(string id)
+        public async Task<IActionResult> GetAllVotes([FromRoute]string id)
         {
             var userId = HttpContext.GetCurrentUserId();
             if (userId == null)
@@ -186,13 +178,7 @@ namespace itec_mobile_api_final.Stations
                 return Unauthorized();
             }
 
-            var allAsync = await _voteRepo.GetAllAsync();
-            if (!allAsync.Any())
-            {
-                return NotFound();
-            }
-            
-            var votes = allAsync.Where(a => a.StationId == id);
+            var votes = await _voteRepo.Queryable.Where(a => a.StationId == id).ToListAsync();
             if (!votes.Any())
             {
                 return NotFound();
@@ -210,13 +196,8 @@ namespace itec_mobile_api_final.Stations
                 return Unauthorized();
             }
             
-            var allAsync = await _voteRepo.GetAllAsync();
-            if (!allAsync.Any())
-            {
-                return NotFound();
-            }
-            
-            var vote = await allAsync.FirstOrDefaultAsync(a => a.StationId == id && a.UserId == userId);
+            var vote = 
+                await _voteRepo.Queryable.FirstOrDefaultAsync(a => a.StationId == id && a.UserId == userId);
             if (vote is null)
             {
                 return NotFound();
@@ -226,7 +207,7 @@ namespace itec_mobile_api_final.Stations
         }
 
         [HttpPut("{id}/Vote")]
-        public async Task<IActionResult> UpdateVote(string id, bool? newVote)
+        public async Task<IActionResult> UpdateVote([FromRoute] string id, bool? newVote)
         {
             var userId = HttpContext.GetCurrentUserId();
             if (userId == null)
