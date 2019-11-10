@@ -7,7 +7,8 @@ using Newtonsoft.Json;
 namespace itec_mobile_api_final.Forum
 {
     public class MessageEntity : Entity
-    {    
+    {   
+        public string Message { get; set; }
         
         [ReadOnly(true)]
         public string UserId { get; set; }
@@ -19,8 +20,6 @@ namespace itec_mobile_api_final.Forum
         [JsonIgnore]
         [ForeignKey(nameof(TopicId))]
         public TopicEntity Topic { get; set; }
-        
-        public string Message { get; set; }
         [ReadOnly(true)]
         public DateTime Created { get; set; }
         [ReadOnly(true)]

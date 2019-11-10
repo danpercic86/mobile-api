@@ -7,6 +7,7 @@ using itec_mobile_api_final.Helpers;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace itec_mobile_api_final.Forum
 {
@@ -29,34 +30,22 @@ namespace itec_mobile_api_final.Forum
         public async Task<IActionResult> GetAll()
         {
             var userId = HttpContext.GetCurrentUserId();
-            if (userId is null)
-            {
-                return Unauthorized();
-            }
-            
+            if (userId is null) return Unauthorized();
+
             var allAsync = await _topicRepository.GetAllAsync();
-            if (!allAsync.Any())
-            {
-                return NotFound();
-            }
-            
+            if (!allAsync.Any()) return NotFound();
+
             return Ok(allAsync);
         }
         
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetOne(string id)
+        public async Task<IActionResult> GetOne([FromRoute] string id)
         {
             var userId = HttpContext.GetCurrentUserId();
-            if (userId is null)
-            {
-                return Unauthorized();
-            }
-            
+            if (userId is null) return Unauthorized();
+
             var topic = await _topicRepository.GetAsync(id);
-            if (topic is null)
-            {
-                return NotFound();
-            }
+            if (topic is null) return NotFound();
 
             return Ok(topic);
         }
@@ -65,17 +54,11 @@ namespace itec_mobile_api_final.Forum
         public async Task<IActionResult> Update([FromBody] dynamic topic, [FromRoute] string id)
         {
             var userId = HttpContext.GetCurrentUserId();
-            if (userId is null)
-            {
-                return Unauthorized();
-            }
-            
+            if (userId is null) return Unauthorized();
+
             var existing = await _topicRepository.GetAsync(id);
-            if (existing is null || existing.UserId != userId)
-            {
-                return NotFound();
-            }
-            
+            if (existing is null || existing.UserId != userId) return NotFound();
+
             existing = ReflectionHelper.PatchObject(existing, topic);
             existing.LastEdited = DateTime.Now;
             
@@ -87,16 +70,10 @@ namespace itec_mobile_api_final.Forum
         public async Task<IActionResult> Delete([FromRoute] string id)
         {
             var userId = HttpContext.GetCurrentUserId();
-            if (userId is null)
-            {
-                return Unauthorized();
-            }
-            
+            if (userId is null) return Unauthorized();
+
             var existing = await _topicRepository.GetAsync(id);
-            if (existing is null || existing.UserId != userId)
-            {
-                return NotFound();
-            }
+            if (existing is null || existing.UserId != userId) return NotFound();
 
             await _topicRepository.DeleteAsync(existing);
             return Ok("Topic deleted!");
@@ -106,22 +83,10 @@ namespace itec_mobile_api_final.Forum
         public async Task<IActionResult> GetMessage([FromRoute] string id)
         {
             var userId = HttpContext.GetCurrentUserId();
-            if (userId is null)
-            {
-                return Unauthorized();
-            }
+            if (userId is null) return Unauthorized();
 
-            var allAsync = await _messageRepository.GetAllAsync();
-            if (!allAsync.Any())
-            {
-                return NotFound();
-            }
-            
-            var messages = allAsync.Where(m => m.TopicId == id);
-            if (!messages.Any())
-            {
-                return NotFound();
-            }
+            var messages = await _messageRepository.Queryable.Where(m => m.TopicId == id).ToListAsync();
+            if (!messages.Any()) return NotFound();
 
             return Ok(messages);
         }
@@ -130,18 +95,15 @@ namespace itec_mobile_api_final.Forum
         public async Task<IActionResult> AddMessage([FromBody] MessageEntity message, [FromRoute] string id)
         {
             var userId = HttpContext.GetCurrentUserId();
-            if (userId == null)
-            {
-                return Unauthorized();
-            }
+            if (userId == null) return Unauthorized();
 
+            message.Id = Guid.NewGuid().ToString();
             message.TopicId = id;
             message.UserId = userId;
             message.Created = DateTime.Now;
             message.LastEdited = DateTime.Now;    
 
             await _messageRepository.AddAsync(message);
-
             return CreatedAtAction(nameof(GetOne), new {id = message.Id}, message);
         }
     }

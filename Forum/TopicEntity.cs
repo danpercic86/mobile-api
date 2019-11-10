@@ -8,6 +8,8 @@ namespace itec_mobile_api_final.Forum
 {
     public class TopicEntity : Entity
     {    
+        public string Title { get; set; }
+        public string Content { get; set; }
         
         [ReadOnly(true)]
         public string UserId { get; set; }
@@ -19,9 +21,6 @@ namespace itec_mobile_api_final.Forum
         [JsonIgnore]
         [ForeignKey(nameof(CategoryId))]
         public CategoryEntity Category { get; set; }
-        
-        public string Title { get; set; }
-        public string Content { get; set; }
         [ReadOnly(true)]
         public DateTime Created { get; set; }
         [ReadOnly(true)]

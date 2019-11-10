@@ -14,7 +14,6 @@ namespace itec_mobile_api_final.Forum
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class MessagesController: Controller
     {
-       
         private readonly IRepository<MessageEntity> _messagesRepository;
         
         public MessagesController(ApplicationDbContext context)
@@ -23,19 +22,13 @@ namespace itec_mobile_api_final.Forum
         }
 
         [HttpPatch("{id}")]
-        public async Task<IActionResult> Update([FromBody] dynamic message , string id)
+        public async Task<IActionResult> Update([FromBody] dynamic message ,[FromRoute] string id)
         {
             var userId = HttpContext.GetCurrentUserId();
-            if (userId is null)
-            {
-                return Unauthorized();
-            }
-            
+            if (userId is null) return Unauthorized();
+
             var existing = await _messagesRepository.GetAsync(id);
-            if (existing is null || existing.UserId != userId)
-            {
-                return NotFound();
-            }
+            if (existing is null || existing.UserId != userId) return NotFound();
 
             existing = ReflectionHelper.PatchObject(existing, message);
             existing.LastEdited = DateTime.Now;
@@ -48,16 +41,10 @@ namespace itec_mobile_api_final.Forum
         public async Task<IActionResult> Delete([FromRoute] string id)
         {
             var userId = HttpContext.GetCurrentUserId();
-            if (userId is null)
-            {
-                return Unauthorized();
-            }
-            
+            if (userId is null) return Unauthorized();
+
             var existing = await _messagesRepository.GetAsync(id);
-            if (existing is null || existing.UserId != userId)
-            {
-                return NotFound();
-            }
+            if (existing is null || existing.UserId != userId) return NotFound();
 
             await _messagesRepository.DeleteAsync(existing);
             return Ok("Message deleted!");

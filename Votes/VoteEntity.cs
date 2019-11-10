@@ -10,6 +10,7 @@ namespace itec_mobile_api_final.Votes
     public class VoteEntity : Entity
     {
         public bool? Vote { get; set; }
+        
         [ReadOnly(true)]
         public string UserId { get; set; }
         [JsonIgnore]
