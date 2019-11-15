@@ -13,6 +13,7 @@ namespace itec_mobile_api_final.Stations
         public int TotalSockets { get; set; }
         public int FreeSockets { get; set; }
         public PointF Location { get; set; }
+        
         [JsonIgnore]
         public bool Old { get; set; }
         

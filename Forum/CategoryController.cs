@@ -14,6 +14,7 @@ namespace itec_mobile_api_final.Forum
     [Route("/api/Forum/[controller]")]
     [ApiController]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+    [Produces("application/json")]
     public class CategoryController : Controller
     {
         private readonly IRepository<CategoryEntity> _categoryRepository;

@@ -14,6 +14,8 @@ namespace itec_mobile_api_final.Forum
     [Route("/api/Forum/[controller]")]
     [ApiController]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+    [Produces("application/json")]
+
     public class TopicsController: Controller
     {
        
@@ -79,7 +81,7 @@ namespace itec_mobile_api_final.Forum
             return Ok("Topic deleted!");
         }
 
-        [HttpGet("{id}/Messages")]
+        [HttpGet("{id}/GetMessage")]
         public async Task<IActionResult> GetMessage([FromRoute] string id)
         {
             var userId = HttpContext.GetCurrentUserId();
@@ -91,7 +93,7 @@ namespace itec_mobile_api_final.Forum
             return Ok(messages);
         }
         
-        [HttpPost("{id}/Messages")]
+        [HttpPost("{id}/AddMessage")]
         public async Task<IActionResult> AddMessage([FromBody] MessageEntity message, [FromRoute] string id)
         {
             var userId = HttpContext.GetCurrentUserId();

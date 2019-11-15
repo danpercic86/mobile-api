@@ -3,7 +3,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using itec_mobile_api_final.Data;
 using itec_mobile_api_final.Extensions;
-using itec_mobile_api_final.Helpers;
 using itec_mobile_api_final.Votes;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
@@ -15,6 +14,8 @@ namespace itec_mobile_api_final.Stations
     [Route("api/[controller]")]
     [ApiController]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+    [Produces("application/json")]
+
     public class StationsController : Controller
     {
         private readonly IRepository<StationEntity> _stationRepo;
@@ -30,16 +31,10 @@ namespace itec_mobile_api_final.Stations
         public async Task<IActionResult> GetAll()
         {
             var userId = HttpContext.GetCurrentUserId();
-            if (userId == null)
-            {
-                return Unauthorized();
-            }
+            if (userId == null) return Unauthorized();
 
             var stations = await _stationRepo.Queryable.Where(s => s.Deleted == false && s.Old == false).ToListAsync();
-            if (!stations.Any())
-            {
-                return NotFound();
-            }
+            if (!stations.Any()) return NotFound();
 
             return Ok(stations);
         }
@@ -48,17 +43,11 @@ namespace itec_mobile_api_final.Stations
         public async Task<IActionResult> GetOne([FromRoute]string id)
         {
             var userId = HttpContext.GetCurrentUserId();
-            if (userId == null)
-            {
-                return Unauthorized();
-            }
-            
-            var station = await _stationRepo.GetAsync(id);
-            if (station == null)
-            {
-                return NotFound();
-            }
+            if (userId == null) return Unauthorized();
 
+            var station = await _stationRepo.GetAsync(id);
+            if (station == null) return NotFound();
+            
             if (station.Deleted)
             {
                 return Ok(new
@@ -75,11 +64,8 @@ namespace itec_mobile_api_final.Stations
         public async Task<IActionResult> Add([FromBody] StationEntity station)
         {
             var userId = HttpContext.GetCurrentUserId();
-            if (userId == null)
-            {
-                return Unauthorized();
-            }
-            
+            if (userId == null) return Unauthorized();
+
             station.Id = Guid.NewGuid().ToString();
             station.UserId = userId;
 
@@ -92,17 +78,11 @@ namespace itec_mobile_api_final.Stations
         public async Task<IActionResult> Edit([FromBody] StationEntity stationEntity, [FromRoute] string id)
         {
             var userId = HttpContext.GetCurrentUserId();
-            if (userId == null)
-            {
-                return Unauthorized();
-            }
-            
+            if (userId == null) return Unauthorized();
+
             var existing = await _stationRepo.GetAsync(id);
-            if (existing == null)
-            {
-                return NotFound();
-            }
-    
+            if (existing == null) return NotFound();
+
             stationEntity.Id = Guid.NewGuid().ToString();
             stationEntity.OldStationId = existing.Id;
             stationEntity.UserId = userId;
@@ -117,16 +97,10 @@ namespace itec_mobile_api_final.Stations
         public async Task<IActionResult> Delete(string id)
         {
             var userId = HttpContext.GetCurrentUserId();
-            if (userId == null)
-            {
-                return Unauthorized();
-            }
-            
+            if (userId == null) return Unauthorized();
+
             var existing = await _stationRepo.GetAsync(id);
-            if (existing == null || existing.Deleted || existing.Old)
-            {
-                return NotFound();
-            }
+            if (existing == null || existing.Deleted || existing.Old) return NotFound();
 
             var newStation = new StationEntity
             {
@@ -151,16 +125,10 @@ namespace itec_mobile_api_final.Stations
         public async Task<IActionResult> UpdateSockets([FromRoute] string id, int freeSocketsValue)
         {
             var userId = HttpContext.GetCurrentUserId();
-            if (userId == null)
-            {
-                return Unauthorized();
-            }
-            
+            if (userId == null) return Unauthorized();
+
             var existing = await _stationRepo.GetAsync(id);
-            if (existing == null || existing.Deleted || existing.Old)
-            {
-                return NotFound();
-            }
+            if (existing == null || existing.Deleted || existing.Old) return NotFound();
 
             existing.FreeSockets = freeSocketsValue;
 
@@ -173,16 +141,10 @@ namespace itec_mobile_api_final.Stations
         public async Task<IActionResult> GetAllVotes([FromRoute]string id)
         {
             var userId = HttpContext.GetCurrentUserId();
-            if (userId == null)
-            {
-                return Unauthorized();
-            }
+            if (userId == null) return Unauthorized();
 
             var votes = await _voteRepo.Queryable.Where(a => a.StationId == id).ToListAsync();
-            if (!votes.Any())
-            {
-                return NotFound();
-            }
+            if (!votes.Any()) return NotFound();
 
             return Ok(votes);
         }
@@ -191,17 +153,10 @@ namespace itec_mobile_api_final.Stations
         public async Task<IActionResult> GetUserVote(string id)
         {
             var userId = HttpContext.GetCurrentUserId();
-            if (userId == null)
-            {
-                return Unauthorized();
-            }
-            
-            var vote = 
-                await _voteRepo.Queryable.FirstOrDefaultAsync(a => a.StationId == id && a.UserId == userId);
-            if (vote is null)
-            {
-                return NotFound();
-            }
+            if (userId == null) return Unauthorized();
+
+            var vote = await _voteRepo.Queryable.FirstOrDefaultAsync(a => a.StationId == id && a.UserId == userId);
+            if (vote is null) return NotFound();
 
             return Ok(vote);
         }
@@ -210,10 +165,7 @@ namespace itec_mobile_api_final.Stations
         public async Task<IActionResult> UpdateVote([FromRoute] string id, bool? newVote)
         {
             var userId = HttpContext.GetCurrentUserId();
-            if (userId == null)
-            {
-                return Unauthorized();
-            }
+            if (userId == null) return Unauthorized();
 
             var vote = default(VoteEntity);
             

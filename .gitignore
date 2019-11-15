@@ -4,3 +4,4 @@ obj/
 .idea/
 .vscode
 conf.vars.local
+global.json

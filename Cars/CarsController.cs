@@ -14,6 +14,7 @@ namespace itec_mobile_api_final.Cars
     [Route("/api/[controller]")]
     [ApiController]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+    [Produces("application/json")]
     public class CarsController : Controller
     {
         private readonly IRepository<CarEntity> _carRepository;
