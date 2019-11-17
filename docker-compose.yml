@@ -11,32 +11,40 @@ services:
     environment:
       - NETCORE_USER_UID=69
       - TZ=Europe/Bucharest
-      - DB_SERVER=db
+      - DB_SERVER=localhost
       - DB_PORT=3306
       - DB_USER=root
-      - DB_PASSWORD=njvhebnEUHUEHGUNENbuehvNIOJFOJVEkeboboeiejEONB
-      - DB_DATABASE=mobile_api
+      - DB_PASSWORD=parola01
+      - DB_DATABASE=mobile_api_1
       - CONTENT_DIRECTORY=/app/content
       - LOGS_DIRECTORY=/app/logs
       - TEMPORARY_VIEWS_PATH=
       - ASPNETCORE_URLS=http://+:5030
     env_file:
-      - ./conf.vars
+      - ./conf.vars.local
     ports:
-      - $PORT:5030
+      - 5040:5030
     volumes:
       - ../docker-volumes/content:/app/content
       - ../docker-volumes/logs:/app/logs
-  
-  db:
-    image: mariadb
-    environment:
-      - MYSQL_ROOT_PASSWORD=njvhebnEUHUEHGUNENbuehvNIOJFOJVEkeboboeiejEONB
-      - MYSQL_DATABASE=mobile_api
+    networks:
+      mariadb-net:
+        aliases:
+          - mobile-api
 
-  phpmyadmin:
-    image: phpmyadmin/phpmyadmin
-    environment:
-      - PMA_HOST=db
-    ports:
-      - 2${PORT}:80
+networks:
+  mariadb-net:
+    external:
+      name: db-net
+#  db:
+#    image: mariadb
+#    environment:
+#      - MYSQL_ROOT_PASSWORD=njvhebnEUHUEHGUNENbuehvNIOJFOJVEkeboboeiejEONB
+#      - MYSQL_DATABASE=mobile_api
+#
+#  phpmyadmin:
+#    image: phpmyadmin/phpmyadmin
+#    environment:
+#      - PMA_HOST=db
+#    ports:
+#      - 2${PORT}:80

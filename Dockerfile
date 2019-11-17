@@ -6,7 +6,8 @@ COPY itec-mobile-api-final.csproj itec-mobile-api-final.sln ./
 RUN dotnet restore
 
 COPY . .
-RUN dotnet publish --output "/app/bin" --configuration release 
+RUN dotnet publish --output "/app/bin" --configuration release
+RUN dotnet ef database update
 
 FROM microsoft/dotnet:2.2-aspnetcore-runtime as runtime-env
 RUN apt-get update && apt-get install -y \
