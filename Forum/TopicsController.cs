@@ -83,7 +83,7 @@ namespace itec_mobile_api_final.Forum
             return Ok("Topic deleted!");
         }
 
-        [HttpGet("{id}/GetMessage")]
+        [HttpGet("{id}/GetMessages")]
         public async Task<IActionResult> GetMessage([FromRoute] string id)
         {
             var userId = HttpContext.GetCurrentUserId();
