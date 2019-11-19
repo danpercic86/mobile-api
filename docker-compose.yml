@@ -26,11 +26,13 @@ services:
     build: .
     container_name: itec-mobile-api-2
     restart: always
+    environment:
       - NETCORE_USER_UID=69
       - TZ=Europe/Bucharest
       - ASPNETCORE_URLS=http://+:5030
     env_file:
       - ./conf.vars.local.2
+    ports:
       - 5020:5030
     networks:
       mariadb-net:
@@ -42,11 +44,13 @@ services:
     build: .
     container_name: itec-mobile-api-3
     restart: always
+    environment:
       - NETCORE_USER_UID=69
       - TZ=Europe/Bucharest
       - ASPNETCORE_URLS=http://+:5030
     env_file:
       - ./conf.vars.local.3
+    ports:
       - 5030:5030
     networks:
       mariadb-net:
@@ -58,11 +62,13 @@ services:
     build: .
     container_name: itec-mobile-api-4
     restart: always
+    environment:
       - NETCORE_USER_UID=69
       - TZ=Europe/Bucharest
       - ASPNETCORE_URLS=http://+:5030
     env_file:
       - ./conf.vars.local.4
+    ports:
       - 5040:5030
     networks:
       mariadb-net:
@@ -92,11 +98,13 @@ services:
     build: .
     container_name: itec-mobile-api-6
     restart: always
+    environment:
       - NETCORE_USER_UID=69
       - TZ=Europe/Bucharest
       - ASPNETCORE_URLS=http://+:5030
     env_file:
       - ./conf.vars.local.6
+    ports:
       - 5060:5030
     networks:
       mariadb-net:
@@ -108,11 +116,13 @@ services:
     build: .
     container_name: itec-mobile-api-7
     restart: always
+    environment:
       - NETCORE_USER_UID=69
       - TZ=Europe/Bucharest
       - ASPNETCORE_URLS=http://+:5030
     env_file:
       - ./conf.vars.local.7
+    ports:
       - 5070:5030
     networks:
       mariadb-net:
