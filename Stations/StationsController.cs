@@ -63,11 +63,11 @@ namespace itec_mobile_api_final.Stations
         [HttpPost]
         public async Task<IActionResult> Add([FromBody] StationEntity station)
         {
-//            var userId = HttpContext.GetCurrentUserId();
-//            if (userId == null) return Unauthorized();
+            var userId = HttpContext.GetCurrentUserId();
+            if (userId == null) return Unauthorized();
 
             station.Id = Guid.NewGuid().ToString();
-            //station.UserId = userId;
+            station.UserId = userId;
 
             await _stationRepo.AddAsync(station);
 
