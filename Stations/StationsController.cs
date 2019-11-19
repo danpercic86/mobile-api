@@ -13,7 +13,7 @@ namespace itec_mobile_api_final.Stations
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+    //[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     [Produces("application/json")]
 
     public class StationsController : Controller
@@ -63,11 +63,11 @@ namespace itec_mobile_api_final.Stations
         [HttpPost]
         public async Task<IActionResult> Add([FromBody] StationEntity station)
         {
-            var userId = HttpContext.GetCurrentUserId();
-            if (userId == null) return Unauthorized();
+//            var userId = HttpContext.GetCurrentUserId();
+//            if (userId == null) return Unauthorized();
 
             station.Id = Guid.NewGuid().ToString();
-            station.UserId = userId;
+            //station.UserId = userId;
 
             await _stationRepo.AddAsync(station);
 

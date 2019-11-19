@@ -30,14 +30,12 @@ namespace itec_mobile_api_final
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-//            var connectionString =
-//                $"server={EnvVarManager.GetOrThrow("DB_SERVER")};" +
-//                $"port={EnvVarManager.GetOrThrow("DB_PORT")};" +
-//                $"database={EnvVarManager.GetOrThrow("DB_DATABASE")};" +
-//                $"uid={EnvVarManager.GetOrThrow("DB_USER")};" +
-//                $"password={EnvVarManager.Get("DB_PASSWORD")}";
-            var connectionString = "server=localhost;port=3306;database=mobile_api_1;uid=root;password=parola01;";
-
+            var connectionString =
+                $"server={EnvVarManager.GetOrThrow("DB_SERVER")};" +
+                $"port={EnvVarManager.GetOrThrow("DB_PORT")};" +
+                $"database={EnvVarManager.GetOrThrow("DB_DATABASE")};" +
+                $"uid={EnvVarManager.GetOrThrow("DB_USER")};" +
+                $"password={EnvVarManager.Get("DB_PASSWORD")}";
             services.Configure<CookiePolicyOptions>(options =>
             {
                 // This lambda determines whether user consent for non-essential cookies is needed for a given request.
@@ -45,7 +43,7 @@ namespace itec_mobile_api_final
                 options.MinimumSameSitePolicy = SameSiteMode.None;
             });
             
-            //services.AddDbContext<ApplicationDbContext>(op => op.UseMySql(connectionString));
+            services.AddDbContext<ApplicationDbContext>(op => op.UseMySql(connectionString));
             services.AddDefaultIdentity<User>()
                 .AddEntityFrameworkStores<ApplicationDbContext>();
 

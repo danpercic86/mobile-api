@@ -24,4 +24,3 @@ RUN chmod +x /usr/bin/docker-entrypoint.sh
 CMD ["docker-entrypoint.sh"]
 
 COPY --from=build-env /app/bin /app/bin
-

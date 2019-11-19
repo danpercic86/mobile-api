@@ -3,48 +3,123 @@
 
 version: '3.1'
 services:
-  netcoreapp:
+  netcoreapp1:
     image: netcoreapp-api-image
     build: .
-    container_name: itec-mobile-api
+    container_name: itec-mobile-api-1
     restart: always
     environment:
       - NETCORE_USER_UID=69
       - TZ=Europe/Bucharest
-      - DB_SERVER=localhost
-      - DB_PORT=3306
-      - DB_USER=root
-      - DB_PASSWORD=parola01
-      - DB_DATABASE=mobile_api_1
-      - CONTENT_DIRECTORY=/app/content
-      - LOGS_DIRECTORY=/app/logs
-      - TEMPORARY_VIEWS_PATH=
       - ASPNETCORE_URLS=http://+:5030
     env_file:
-      - ./conf.vars.local
+      - ./conf.vars.local.1
     ports:
-      - 5040:5030
-    volumes:
-      - ../docker-volumes/content:/app/content
-      - ../docker-volumes/logs:/app/logs
+      - 5010:5030
     networks:
       mariadb-net:
         aliases:
-          - mobile-api
+          - mobile-api-1
+            
+  netcoreapp2:
+    image: netcoreapp-api-image
+    build: .
+    container_name: itec-mobile-api-2
+    restart: always
+      - NETCORE_USER_UID=69
+      - TZ=Europe/Bucharest
+      - ASPNETCORE_URLS=http://+:5030
+    env_file:
+      - ./conf.vars.local.2
+      - 5020:5030
+    networks:
+      mariadb-net:
+        aliases:
+          - mobile-api-2
+            
+  netcoreapp3:
+    image: netcoreapp-api-image
+    build: .
+    container_name: itec-mobile-api-3
+    restart: always
+      - NETCORE_USER_UID=69
+      - TZ=Europe/Bucharest
+      - ASPNETCORE_URLS=http://+:5030
+    env_file:
+      - ./conf.vars.local.3
+      - 5030:5030
+    networks:
+      mariadb-net:
+        aliases:
+          - mobile-api-3
+            
+  netcoreapp4:
+    image: netcoreapp-api-image
+    build: .
+    container_name: itec-mobile-api-4
+    restart: always
+      - NETCORE_USER_UID=69
+      - TZ=Europe/Bucharest
+      - ASPNETCORE_URLS=http://+:5030
+    env_file:
+      - ./conf.vars.local.4
+      - 5040:5030
+    networks:
+      mariadb-net:
+        aliases:
+          - mobile-api-4
+            
+  netcoreapp5:
+    image: netcoreapp-api-image
+    build: .
+    container_name: itec-mobile-api-5
+    restart: always
+    environment:
+      - NETCORE_USER_UID=69
+      - TZ=Europe/Bucharest
+      - ASPNETCORE_URLS=http://+:5030
+    env_file:
+      - ./conf.vars.local.5
+    ports:
+      - 5050:5030
+    networks:
+      mariadb-net:
+        aliases:
+          - mobile-api-5
+
+  netcoreapp6:
+    image: netcoreapp-api-image
+    build: .
+    container_name: itec-mobile-api-6
+    restart: always
+      - NETCORE_USER_UID=69
+      - TZ=Europe/Bucharest
+      - ASPNETCORE_URLS=http://+:5030
+    env_file:
+      - ./conf.vars.local.6
+      - 5060:5030
+    networks:
+      mariadb-net:
+        aliases:
+          - mobile-api-6
+
+  netcoreapp7:
+    image: netcoreapp-api-image
+    build: .
+    container_name: itec-mobile-api-7
+    restart: always
+      - NETCORE_USER_UID=69
+      - TZ=Europe/Bucharest
+      - ASPNETCORE_URLS=http://+:5030
+    env_file:
+      - ./conf.vars.local.7
+      - 5070:5030
+    networks:
+      mariadb-net:
+        aliases:
+          - mobile-api-7
 
 networks:
   mariadb-net:
     external:
       name: db-net
-#  db:
-#    image: mariadb
-#    environment:
-#      - MYSQL_ROOT_PASSWORD=njvhebnEUHUEHGUNENbuehvNIOJFOJVEkeboboeiejEONB
-#      - MYSQL_DATABASE=mobile_api
-#
-#  phpmyadmin:
-#    image: phpmyadmin/phpmyadmin
-#    environment:
-#      - PMA_HOST=db
-#    ports:
-#      - 2${PORT}:80
