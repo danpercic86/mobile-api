@@ -59,7 +59,8 @@ namespace itec_mobile_api_final.Forum
             if (userId is null) return Unauthorized();
 
             var existing = await _topicRepository.GetAsync(id);
-            if (existing is null || existing.UserId != userId) return NotFound();
+            if (existing is null) return NotFound();
+            if (existing.UserId != userId) return Forbid();
 
             existing = ReflectionHelper.PatchObject(existing, topic);
             existing.LastEdited = DateTime.Now;
@@ -75,7 +76,8 @@ namespace itec_mobile_api_final.Forum
             if (userId is null) return Unauthorized();
 
             var existing = await _topicRepository.GetAsync(id);
-            if (existing is null || existing.UserId != userId) return NotFound();
+            if (existing is null) return NotFound();
+            if (existing.UserId != userId) return Forbid();
 
             await _topicRepository.DeleteAsync(existing);
             return Ok("Topic deleted!");

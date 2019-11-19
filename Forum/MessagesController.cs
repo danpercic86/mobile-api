@@ -23,6 +23,19 @@ namespace itec_mobile_api_final.Forum
             _messagesRepository = context.GetRepository<MessageEntity>();
         }
 
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetOne([FromRoute] string id)
+        {
+            var userId = HttpContext.GetCurrentUserId();
+            if (userId is null) return Unauthorized();
+
+            var existing = await _messagesRepository.GetAsync(id);
+            if (existing is null) return NotFound();
+            if (existing.UserId != userId) return Forbid();
+            
+            return Ok(existing);
+        }
+        
         [HttpPatch("{id}")]
         public async Task<IActionResult> Update([FromBody] dynamic message ,[FromRoute] string id)
         {
@@ -30,7 +43,8 @@ namespace itec_mobile_api_final.Forum
             if (userId is null) return Unauthorized();
 
             var existing = await _messagesRepository.GetAsync(id);
-            if (existing is null || existing.UserId != userId) return NotFound();
+            if (existing is null) return NotFound();
+            if (existing.UserId != userId) return Forbid();
 
             existing = ReflectionHelper.PatchObject(existing, message);
             existing.LastEdited = DateTime.Now;
@@ -46,7 +60,8 @@ namespace itec_mobile_api_final.Forum
             if (userId is null) return Unauthorized();
 
             var existing = await _messagesRepository.GetAsync(id);
-            if (existing is null || existing.UserId != userId) return NotFound();
+            if (existing is null) return NotFound();
+            if (existing.UserId != userId) return Forbid();
 
             await _messagesRepository.DeleteAsync(existing);
             return Ok("Message deleted!");

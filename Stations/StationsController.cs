@@ -13,7 +13,7 @@ namespace itec_mobile_api_final.Stations
 {
     [Route("api/[controller]")]
     [ApiController]
-    //[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     [Produces("application/json")]
 
     public class StationsController : Controller
@@ -31,7 +31,7 @@ namespace itec_mobile_api_final.Stations
         public async Task<IActionResult> GetAll()
         {
             var userId = HttpContext.GetCurrentUserId();
-            if (userId == null) return Unauthorized();
+            if (userId is null) return Unauthorized();
 
             var stations = await _stationRepo.Queryable.Where(s => s.Deleted == false && s.Old == false).ToListAsync();
             if (!stations.Any()) return NotFound();
@@ -43,10 +43,10 @@ namespace itec_mobile_api_final.Stations
         public async Task<IActionResult> GetOne([FromRoute]string id)
         {
             var userId = HttpContext.GetCurrentUserId();
-            if (userId == null) return Unauthorized();
+            if (userId is null) return Unauthorized();
 
             var station = await _stationRepo.GetAsync(id);
-            if (station == null) return NotFound();
+            if (station is null) return NotFound();
             
             if (station.Deleted)
             {
@@ -64,7 +64,7 @@ namespace itec_mobile_api_final.Stations
         public async Task<IActionResult> Add([FromBody] StationEntity station)
         {
             var userId = HttpContext.GetCurrentUserId();
-            if (userId == null) return Unauthorized();
+            if (userId is null) return Unauthorized();
 
             station.Id = Guid.NewGuid().ToString();
             station.UserId = userId;
@@ -78,10 +78,10 @@ namespace itec_mobile_api_final.Stations
         public async Task<IActionResult> Edit([FromBody] StationEntity stationEntity, [FromRoute] string id)
         {
             var userId = HttpContext.GetCurrentUserId();
-            if (userId == null) return Unauthorized();
+            if (userId is null) return Unauthorized();
 
             var existing = await _stationRepo.GetAsync(id);
-            if (existing == null) return NotFound();
+            if (existing is null) return NotFound();
 
             stationEntity.Id = Guid.NewGuid().ToString();
             stationEntity.OldStationId = existing.Id;
@@ -97,10 +97,10 @@ namespace itec_mobile_api_final.Stations
         public async Task<IActionResult> Delete(string id)
         {
             var userId = HttpContext.GetCurrentUserId();
-            if (userId == null) return Unauthorized();
+            if (userId is null) return Unauthorized();
 
             var existing = await _stationRepo.GetAsync(id);
-            if (existing == null || existing.Deleted || existing.Old) return NotFound();
+            if (existing is null || existing.Deleted || existing.Old) return NotFound();
 
             var newStation = new StationEntity
             {
