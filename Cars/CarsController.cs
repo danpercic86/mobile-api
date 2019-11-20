@@ -23,7 +23,10 @@ namespace itec_mobile_api_final.Cars
         {
             _carRepository = context.GetRepository<CarEntity>();
         }
-
+        
+        /// <summary>
+        /// List all cars owned by user.
+        /// </summary>
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
@@ -36,6 +39,11 @@ namespace itec_mobile_api_final.Cars
             return Ok(cars);
         }
 
+        /// <summary>
+        /// Get car details. User must be owner.
+        /// </summary>
+        /// <param name="id">Car id</param>
+        /// <returns></returns>
         [HttpGet("{id}")]
         public async Task<IActionResult> GetOne([FromRoute] string id)
         {
@@ -48,6 +56,9 @@ namespace itec_mobile_api_final.Cars
             return Ok(car);
         }
 
+        /// <summary>
+        /// Add a car. User will be owner.
+        /// </summary>
         [HttpPost]
         public async Task<IActionResult> Post([FromBody] CarEntity car)
         {
@@ -61,6 +72,12 @@ namespace itec_mobile_api_final.Cars
             return CreatedAtAction(nameof(GetOne), new {id = car.Id}, car);
         }
 
+        /// <summary>
+        /// Update car details. User must be owner.
+        /// </summary>
+        /// <param name="car1">Car properties</param>
+        /// <param name="id">Car id</param>
+        /// <returns></returns>
         [HttpPatch("{id}")]
         public async Task<IActionResult> Patch([FromBody] dynamic car1, [FromRoute] string id)
         {
@@ -76,6 +93,11 @@ namespace itec_mobile_api_final.Cars
             return Ok(car);
         }
 
+        /// <summary>
+        /// Delete car. User must be owner.
+        /// </summary>
+        /// <param name="id">Car id</param>
+        /// <returns></returns>
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete([FromRoute] string id)
         {

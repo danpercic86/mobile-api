@@ -23,6 +23,11 @@ namespace itec_mobile_api_final.Forum
             _messagesRepository = context.GetRepository<MessageEntity>();
         }
 
+        /// <summary>
+        /// Get a message details
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         [HttpGet("{id}")]
         public async Task<IActionResult> GetOne([FromRoute] string id)
         {
@@ -36,6 +41,12 @@ namespace itec_mobile_api_final.Forum
             return Ok(existing);
         }
         
+        /// <summary>
+        /// Update a message. User must be owner.
+        /// </summary>
+        /// <param name="message">Message properties</param>
+        /// <param name="id">Message id</param>
+        /// <returns></returns>
         [HttpPatch("{id}")]
         public async Task<IActionResult> Update([FromBody] dynamic message ,[FromRoute] string id)
         {
@@ -53,6 +64,11 @@ namespace itec_mobile_api_final.Forum
             return Ok(existing);
         }
 
+        /// <summary>
+        /// Delete a message. User must be owner.
+        /// </summary>
+        /// <param name="id">Message id</param>
+        /// <returns></returns>
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete([FromRoute] string id)
         {

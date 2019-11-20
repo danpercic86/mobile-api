@@ -28,6 +28,10 @@ namespace itec_mobile_api_final.Forum
             _messageRepository = context.GetRepository<MessageEntity>();
         }
         
+        /// <summary>
+        /// Get all topics details.
+        /// </summary>
+        /// <returns></returns>
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
@@ -40,6 +44,11 @@ namespace itec_mobile_api_final.Forum
             return Ok(allAsync);
         }
         
+        /// <summary>
+        /// Get a topic's details.
+        /// </summary>
+        /// <param name="id">Topic id</param>
+        /// <returns></returns>
         [HttpGet("{id}")]
         public async Task<IActionResult> GetOne([FromRoute] string id)
         {
@@ -52,6 +61,12 @@ namespace itec_mobile_api_final.Forum
             return Ok(topic);
         }
 
+        /// <summary>
+        /// Update a topic. User must be owner.
+        /// </summary>
+        /// <param name="topic">Topic properties</param>
+        /// <param name="id">Topic id</param>
+        /// <returns></returns>
         [HttpPatch("{id}")]
         public async Task<IActionResult> Update([FromBody] dynamic topic, [FromRoute] string id)
         {
@@ -69,6 +84,11 @@ namespace itec_mobile_api_final.Forum
             return Ok(existing);
         }
 
+        /// <summary>
+        /// Delete a topic. User must be owner.
+        /// </summary>
+        /// <param name="id">Topic id</param>
+        /// <returns></returns>
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete([FromRoute] string id)
         {
@@ -83,6 +103,11 @@ namespace itec_mobile_api_final.Forum
             return Ok("Topic deleted!");
         }
 
+        /// <summary>
+        /// List the topic's messages.
+        /// </summary>
+        /// <param name="id">Topic id</param>
+        /// <returns></returns>
         [HttpGet("{id}/GetMessages")]
         public async Task<IActionResult> GetMessage([FromRoute] string id)
         {
@@ -95,6 +120,12 @@ namespace itec_mobile_api_final.Forum
             return Ok(messages);
         }
         
+        /// <summary>
+        /// Add a new message to the topic.
+        /// </summary>
+        /// <param name="message">Message properties</param>
+        /// <param name="id">Topic id</param>
+        /// <returns></returns>
         [HttpPost("{id}/AddMessage")]
         public async Task<IActionResult> AddMessage([FromBody] MessageEntity message, [FromRoute] string id)
         {

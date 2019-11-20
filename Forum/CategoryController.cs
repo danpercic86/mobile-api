@@ -26,6 +26,10 @@ namespace itec_mobile_api_final.Forum
             _topicRepository = context.GetRepository<TopicEntity>();
         }
 
+        /// <summary>
+        /// List all root categories.
+        /// </summary>
+        /// <returns></returns>
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
@@ -38,6 +42,11 @@ namespace itec_mobile_api_final.Forum
             return Ok(categories);
         }
 
+        /// <summary>
+        /// Get the category details.
+        /// </summary>
+        /// <param name="id">Category id</param>
+        /// <returns></returns>
         [HttpGet("{id}")]
         public async Task<IActionResult> GetOne([FromRoute] string id)
         {
@@ -50,6 +59,11 @@ namespace itec_mobile_api_final.Forum
             return Ok(category);
         }
         
+        /// <summary>
+        /// List the category's child categories.
+        /// </summary>
+        /// <param name="id">Category id</param>
+        /// <returns></returns>
         [HttpGet("{id}/Categories")]
         public async Task<IActionResult> GetChildCategories([FromRoute] string id)
         {
@@ -62,6 +76,11 @@ namespace itec_mobile_api_final.Forum
             return Ok(categories);
         }
         
+        /// <summary>
+        /// List the category's child topics.
+        /// </summary>
+        /// <param name="id">Category id</param>
+        /// <returns></returns>
         [HttpGet("{id}/Topics")]
         public async Task<IActionResult> GetChildTopics([FromRoute] string id)
         {
@@ -74,6 +93,11 @@ namespace itec_mobile_api_final.Forum
             return Ok(topics);
         }
 
+        /// <summary>
+        /// Create a root category.
+        /// </summary>
+        /// <param name="category">Category properties</param>
+        /// <returns></returns>
         [HttpPost]
         public async Task<IActionResult> Add([FromBody] CategoryEntity category)
         {
@@ -89,6 +113,12 @@ namespace itec_mobile_api_final.Forum
             return Ok(category);
         }
 
+        /// <summary>
+        /// Create a child category.
+        /// </summary>
+        /// <param name="category">Category properties</param>
+        /// <param name="id">Category id</param>
+        /// <returns></returns>
         [HttpPost("{id}/Category")]
         public async Task<IActionResult> AddChildCategory([FromBody] CategoryEntity category, [FromRoute] string id)
         {
@@ -104,6 +134,12 @@ namespace itec_mobile_api_final.Forum
             return Ok(category);
         }
 
+        /// <summary>
+        /// Create a child topic.
+        /// </summary>
+        /// <param name="topic">Topic properties</param>
+        /// <param name="id">Category id</param>
+        /// <returns></returns>
         [HttpPost("{id}/Topic")]
         public async Task<IActionResult> AddChildTopic([FromBody] TopicEntity topic, [FromRoute] string id)
         {
