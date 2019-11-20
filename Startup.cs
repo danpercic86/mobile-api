@@ -18,6 +18,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using Swashbuckle.AspNetCore.Swagger;
+using Swashbuckle.AspNetCore.SwaggerGen;
 
 namespace itec_mobile_api_final
 {
@@ -45,7 +46,7 @@ namespace itec_mobile_api_final
                 options.CheckConsentNeeded = context => true;
                 options.MinimumSameSitePolicy = SameSiteMode.None;
             });
-            
+
             services.AddDbContext<ApplicationDbContext>(op => op.UseMySql(connectionString));
             services.AddDefaultIdentity<User>()
                 .AddEntityFrameworkStores<ApplicationDbContext>();
@@ -53,13 +54,14 @@ namespace itec_mobile_api_final
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new Info {Title = "iTEC Mobile API", Version = "v1.0"});
+
                 c.SchemaFilter<ReadOnlyFilter>();
 
                 var security = new Dictionary<string, IEnumerable<string>>
                 {
                     {"Bearer", new string[0]}
                 };
-                
+
                 c.AddSecurityDefinition("Bearer", new ApiKeyScheme
                 {
                     Description = "JWT Authorization header using bearer scheme",
@@ -74,7 +76,7 @@ namespace itec_mobile_api_final
                 c.IncludeXmlComments(xmlPath);
                 c.EnableAnnotations();
             });
-            
+
             // Ensure JWT
             var jwtOptions = new JwtOptions();
             Configuration.Bind(nameof(jwtOptions), jwtOptions);
@@ -126,9 +128,17 @@ namespace itec_mobile_api_final
             app.UseCookiePolicy();
 
             app.UseAuthentication();
-            app.UseSwagger(options => { options.RouteTemplate = "/swagger/{documentName}/swagger.json"; });
+            app.UseSwagger(c =>
+            {
+                c.RouteTemplate = "/swagger/{documentName}/swagger.json";
+                c.PreSerializeFilters.Add((swaggerDoc, httpReq) =>
+                {
+                    swaggerDoc.Host = httpReq.Host.Value;
+                    swaggerDoc.Schemes = new List<string>() {httpReq.Scheme};
+                });
+            });
             app.UseSwaggerUI(c => { c.SwaggerEndpoint("/swagger/v1/swagger.json", "post API V1"); });
-            
+
             app.UseMvc();
         }
     }
