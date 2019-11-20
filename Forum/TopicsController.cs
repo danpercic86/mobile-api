@@ -156,7 +156,9 @@ namespace itec_mobile_api_final.Forum
             message.LastEdited = DateTime.Now;    
 
             await _messageRepository.AddAsync(message);
-            return CreatedAtAction(nameof(GetOne), new {id = message.Id}, message);
+            var created = await _messageRepository.GetAsync(message.Id);
+
+            return Ok(created);
         }
     }
 }

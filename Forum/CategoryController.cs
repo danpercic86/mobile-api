@@ -120,7 +120,9 @@ namespace itec_mobile_api_final.Forum
             category.LastEdited = DateTime.Now;
             
             await _categoryRepository.AddAsync(category);
-            return Ok(category);
+            var created = await _categoryRepository.GetAsync(category.Id);
+            
+            return Ok(created);
         }
 
         /// <summary>
@@ -146,7 +148,9 @@ namespace itec_mobile_api_final.Forum
             category.LastEdited = DateTime.Now;
             
             await _categoryRepository.AddAsync(category);
-            return Ok(category);
+            var created = await _categoryRepository.GetAsync(category.Id);
+            
+            return Ok(created);
         }
 
         /// <summary>
@@ -173,7 +177,9 @@ namespace itec_mobile_api_final.Forum
             topic.LastEdited = DateTime.Now;
 
             await _topicRepository.AddAsync(topic);
-            return Ok(topic);
+            var created = await _topicRepository.GetAsync(topic.Id);
+            
+            return Ok(created);
         }
     }
 }

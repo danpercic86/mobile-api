@@ -76,7 +76,9 @@ namespace itec_mobile_api_final.Cars
             car.Id = Guid.NewGuid().ToString();
             
             await _carRepository.AddAsync(car);
-            return CreatedAtAction(nameof(GetOne), new {id = car.Id}, car);
+            var created = await _carRepository.GetAsync(car.Id);
+            
+            return Ok(created);
         }
 
         /// <summary>

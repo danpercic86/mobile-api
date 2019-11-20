@@ -97,8 +97,9 @@ namespace itec_mobile_api_final.Stations
             station.UserId = userId;
 
             await _stationRepo.AddAsync(station);
+            var created = await _stationRepo.GetAsync(station.Id);
 
-            return CreatedAtAction(nameof(GetOne), new {id = station.Id}, station);
+            return Ok(created);
         }
 
         /// <summary>
@@ -124,8 +125,9 @@ namespace itec_mobile_api_final.Stations
             existing.Old = true;
 
             await _stationRepo.AddAsync(stationEntity);
-
-            return Ok(stationEntity);
+            var edited = await _stationRepo.GetAsync(stationEntity.Id);
+            
+            return Ok(edited);
         }
 
         /// <summary>
