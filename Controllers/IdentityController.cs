@@ -25,6 +25,11 @@ namespace itec_mobile_api_final.Controllers
             _userManager = userManager;
         }
 
+        /// <summary>
+        /// Register a new account.
+        /// </summary>
+        /// <param name="request">User data</param>
+        /// <returns></returns>
         [HttpPost("Register")]
         [AllowAnonymous]
         public async Task<IActionResult> Register([FromBody] UserRegistrationRequest request)
@@ -36,7 +41,7 @@ namespace itec_mobile_api_final.Controllers
                     Errors = ModelState.Values.SelectMany(x => x.Errors.Select(a => a.ErrorMessage))
                 });
             }
-            
+
             var authResponse = await _identityService.RegisterAsync(request);
 
             if (!authResponse.Success)
@@ -52,7 +57,12 @@ namespace itec_mobile_api_final.Controllers
                 Token = authResponse.Token
             });
         }
-        
+
+        /// <summary>
+        /// Login using e-mail and password.
+        /// </summary>
+        /// <param name="request">Login credentials</param>
+        /// <returns></returns>
         [HttpPost("Login")]
         [AllowAnonymous]
         public async Task<IActionResult> Login([FromBody] UserLoginRequest request)
@@ -73,6 +83,10 @@ namespace itec_mobile_api_final.Controllers
             });
         }
 
+        /// <summary>
+        /// Get the user logged in by the current Authorization token.
+        /// </summary>
+        /// <returns></returns>
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [HttpGet]
         public async Task<IActionResult> Get()
@@ -85,14 +99,18 @@ namespace itec_mobile_api_final.Controllers
                 user.Email,
             });
         }
-        
+
+        /// <summary>
+        /// Update current user's profile.
+        /// </summary>
+        /// <returns></returns>
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [HttpPost("Update")]
         public async Task<IActionResult> Update([FromBody] UserUpdateRequest request)
         {
             var user = await HttpContext.GetCurrentUserAsync(_userManager);
             var updateResponse = await _identityService.UpdateAsync(user, request);
-            
+
             if (!updateResponse.Success)
             {
                 return BadRequest(new AuthFailedResponse
@@ -100,7 +118,7 @@ namespace itec_mobile_api_final.Controllers
                     Errors = updateResponse.Errors
                 });
             }
-            
+
             return Ok(new AuthSuccessResponse
             {
                 Token = updateResponse.Token

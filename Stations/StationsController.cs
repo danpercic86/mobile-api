@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using itec_mobile_api_final.Data;
@@ -16,15 +17,16 @@ namespace itec_mobile_api_final.Stations
     [ApiController]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     [Produces("application/json")]
-    [SwaggerTag("To prevent incorrect information, each station entity has a score determined by user upvotes and downvotes. " +
-                "Each user can vote once on a station, saying whether the information is valid or not. " +
-                "When editing or deleting a station, a new entity will be created, with a reference to the old entity. This new entity will have no votes and will need to be validated again." + 
-                "A station's edit history can be reconstructed by following the previous version references.")]
+    [SwaggerTag(
+        "To prevent incorrect information, each station entity has a score determined by user upvotes and downvotes. " +
+        "Each user can vote once on a station, saying whether the information is valid or not. " +
+        "When editing or deleting a station, a new entity will be created, with a reference to the old entity. This new entity will have no votes and will need to be validated again." +
+        "A station's edit history can be reconstructed by following the previous version references.")]
     public class StationsController : Controller
     {
         private readonly IRepository<StationEntity> _stationRepo;
         private readonly IRepository<VoteEntity> _voteRepo;
-        
+
         public StationsController(ApplicationDbContext context)
         {
             _stationRepo = context.GetRepository<StationEntity>();
@@ -59,7 +61,7 @@ namespace itec_mobile_api_final.Stations
 
             var station = await _stationRepo.GetAsync(id);
             if (station is null) return NotFound();
-            
+
             if (station.Deleted)
             {
                 return Ok(new
@@ -143,7 +145,7 @@ namespace itec_mobile_api_final.Stations
                 Deleted = true,
             };
             existing.Old = true;
-            
+
             await _stationRepo.AddAsync(newStation);
 
             return Ok(newStation);
@@ -219,7 +221,7 @@ namespace itec_mobile_api_final.Stations
             if (userId == null) return Unauthorized();
 
             var vote = default(VoteEntity);
-            
+
             var allAsync = await _voteRepo.GetAllAsync();
             if (!allAsync.Any())
             {
@@ -229,7 +231,7 @@ namespace itec_mobile_api_final.Stations
 
                 return Ok(vote);
             }
-            
+
             vote = await allAsync.FirstOrDefaultAsync(a => a.StationId == id && a.UserId == userId);
             if (vote is null)
             {
@@ -241,7 +243,7 @@ namespace itec_mobile_api_final.Stations
             }
 
             vote.Vote = newVote;
-            await  _voteRepo.UpdateAsync(vote);
+            await _voteRepo.UpdateAsync(vote);
 
             return Ok(vote);
         }
