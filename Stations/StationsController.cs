@@ -27,6 +27,9 @@ namespace itec_mobile_api_final.Stations
             _voteRepo = context.GetRepository<VoteEntity>();
         }
 
+        /// <remarks>
+        /// More elaborate description
+        /// </remarks>
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {

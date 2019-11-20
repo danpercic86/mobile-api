@@ -6,12 +6,28 @@
         <AspNetCoreHostingModel>InProcess</AspNetCoreHostingModel>
         <RootNamespace>itec_mobile_api_final</RootNamespace>
     </PropertyGroup>
+
+    <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+      <DocumentationFile>bin\Debug\itec-mobile-api-final.xml</DocumentationFile>
+    </PropertyGroup>
+
+    <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+      <DocumentationFile>bin\Release\itec-mobile-api-final.xml</DocumentationFile>
+    </PropertyGroup>
     
     <ItemGroup>
         <PackageReference Include="Microsoft.AspNetCore.App" />
         <PackageReference Include="Microsoft.AspNetCore.Razor.Design" Version="2.2.0" PrivateAssets="All" />
         <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="2.2.6" />
         <PackageReference Include="Swashbuckle.AspNetCore" Version="4.0.1" />
+    </ItemGroup>
+    
+    <ItemGroup>
+      <_ContentIncludedByDefault Remove="app\bin\web.config" />
+      <_ContentIncludedByDefault Remove="app\bin\appsettings.Development.json" />
+      <_ContentIncludedByDefault Remove="app\bin\appsettings.json" />
+      <_ContentIncludedByDefault Remove="app\bin\itec-mobile-api-final.deps.json" />
+      <_ContentIncludedByDefault Remove="app\bin\itec-mobile-api-final.runtimeconfig.json" />
     </ItemGroup>
 
 </Project>
