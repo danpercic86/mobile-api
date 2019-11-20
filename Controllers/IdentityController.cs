@@ -25,8 +25,14 @@ namespace itec_mobile_api_final.Controllers
             _userManager = userManager;
         }
 
+        /// <summary>
+        /// The user will receive a link by email, which will need to be opened and handled in-app.
+        /// </summary>
+        /// <param name="request"></param>
+        /// <returns></returns>
         [HttpPost("Register")]
         [AllowAnonymous]
+        [ProducesResponseType(typeof(BadRequestResult), 400)]
         public async Task<IActionResult> Register([FromBody] UserRegistrationRequest request)
         {
             if (!ModelState.IsValid)
