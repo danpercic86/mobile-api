@@ -73,6 +73,7 @@ namespace itec_mobile_api_final
                 var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
                 c.IncludeXmlComments(xmlPath);
                 c.EnableAnnotations();
+                
             });
             
             // Ensure JWT
@@ -127,7 +128,7 @@ namespace itec_mobile_api_final
 
             app.UseAuthentication();
             app.UseSwagger(options => { options.RouteTemplate = "/swagger/{documentName}/swagger.json"; });
-            app.UseSwaggerUI(c => { c.SwaggerEndpoint("/swagger/v1/swagger.json", "post API V1"); });
+            app.UseSwaggerUI(c => { c.SwaggerEndpoint("/swagger/v1/swagger.json", "post API V1"); c.RoutePrefix = "docs"; });
             
             app.UseMvc();
         }

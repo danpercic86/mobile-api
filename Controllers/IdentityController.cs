@@ -9,11 +9,15 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Swashbuckle.AspNetCore.Annotations;
 
 namespace itec_mobile_api_final.Controllers
 {
     [Route("api/Auth")]
     [ApiController]
+    [SwaggerTag("JWT-based authentication. After logging in, a token is received from the API. " +
+                "You will need to provide this token for every subsequent request, in the Authorization header " +
+                "(as 'bearer {token}' - don't forget the prefix!).")]
     public class IdentityController : Controller
     {
         private readonly IIdentityService _identityService;
@@ -61,6 +65,7 @@ namespace itec_mobile_api_final.Controllers
         
         [HttpPost("Login")]
         [AllowAnonymous]
+        [ProducesResponseType(typeof(BadRequestResult), 400)]
         public async Task<IActionResult> Login([FromBody] UserLoginRequest request)
         {
             var authResponse = await _identityService.LoginAsync(request.Email, request.Password);
@@ -94,6 +99,7 @@ namespace itec_mobile_api_final.Controllers
         
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [HttpPost("Update")]
+        [ProducesResponseType(typeof(BadRequestResult), 400)]
         public async Task<IActionResult> Update([FromBody] UserUpdateRequest request)
         {
             var user = await HttpContext.GetCurrentUserAsync(_userManager);

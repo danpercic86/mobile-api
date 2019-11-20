@@ -15,6 +15,7 @@ namespace itec_mobile_api_final
 {
     public class Program
     {
+
         public static void Main(string[] args)
         {
             CreateWebHostBuilder(args).Build().Run();
@@ -24,4 +25,5 @@ namespace itec_mobile_api_final
             WebHost.CreateDefaultBuilder(args)
                 .UseStartup<Startup>();
     }
+
 }
