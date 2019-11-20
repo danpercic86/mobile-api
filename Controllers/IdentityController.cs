@@ -119,9 +119,11 @@ namespace itec_mobile_api_final.Controllers
                 });
             }
 
-            return Ok(new AuthSuccessResponse
+            return Ok(new
             {
-                Token = updateResponse.Token
+                user.FirstName,
+                user.LastName,
+                user.Email
             });
         }
     }
