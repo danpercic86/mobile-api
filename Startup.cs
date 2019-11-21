@@ -18,7 +18,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using Swashbuckle.AspNetCore.Swagger;
-using Swashbuckle.AspNetCore.SwaggerGen;
 
 namespace itec_mobile_api_final
 {
@@ -131,14 +130,16 @@ namespace itec_mobile_api_final
             app.UseAuthentication();
             app.UseSwagger(c =>
             {
-                c.RouteTemplate = "/swagger/{documentName}/swagger.json";
+                c.RouteTemplate = "/docs/{documentName}/docs.json";
                 c.PreSerializeFilters.Add((swaggerDoc, httpReq) =>
                 {
                     swaggerDoc.Host = httpReq.Host.Value;
                     swaggerDoc.Schemes = new List<string>() {httpReq.Scheme};
                 });
             });
-            app.UseSwaggerUI(c => { c.SwaggerEndpoint("/swagger/v1/swagger.json", "post API V1"); });
+            app.UseSwaggerUI(c => { c.SwaggerEndpoint("/docs/v1/docs.json", "Mobile API v1");
+                c.RoutePrefix = "docs";
+            });
 
             app.UseMvc();
         }
