@@ -74,7 +74,7 @@ namespace itec_mobile_api_final.Controllers
         }
 
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-        [HttpGet]
+        [HttpGet("Me")]
         public async Task<IActionResult> Get()
         {
             var user = await HttpContext.GetCurrentUserAsync(_userManager);

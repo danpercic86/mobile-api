@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Text;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -7,6 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using itec_mobile_api_final.Data;
 using itec_mobile_api_final.Entities;
+using itec_mobile_api_final.Filters;
 using itec_mobile_api_final.Helpers;
 using itec_mobile_api_final.Options;
 using itec_mobile_api_final.Services;
@@ -43,7 +45,7 @@ namespace itec_mobile_api_final
                 options.CheckConsentNeeded = context => true;
                 options.MinimumSameSitePolicy = SameSiteMode.None;
             });
-            
+
             services.AddDbContext<ApplicationDbContext>(op => op.UseMySql(connectionString));
             services.AddDefaultIdentity<User>()
                 .AddEntityFrameworkStores<ApplicationDbContext>();
@@ -53,22 +55,27 @@ namespace itec_mobile_api_final
                 c.SwaggerDoc("v1", new Info {Title = "iTEC Mobile API", Version = "v1.0"});
                 c.SchemaFilter<ReadOnlyFilter>();
 
-                var security = new Dictionary<string, IEnumerable<string>>
-                {
-                    {"Bearer", new string[0]}
-                };
-                
                 c.AddSecurityDefinition("Bearer", new ApiKeyScheme
                 {
-                    Description = "JWT Authorization header using bearer scheme",
+                    Description =
+                        "JWT Authorization header using Bearer scheme ('Bearer {token}' - don't forget the prefix!)",
                     Name = "Authorization",
                     In = "header",
                     Type = "apiKey",
                 });
 
-                c.AddSecurityRequirement(security);
+                c.AddSecurityDefinition("TEAM_KEY", new ApiKeyScheme
+                {
+                    Description = "This key is specific to your team and you should receive it from the organizers.",
+                    Name = "TEAM_KEY",
+                    In = "header",
+                    Type = "apiKey",
+                });
+
+                c.OperationFilter<AuthorizationHeaderParameterOperationFilter>();
+                c.OperationFilter<TeamKeyHeaderOperationFilter>();
             });
-            
+
             // Ensure JWT
             var jwtOptions = new JwtOptions();
             Configuration.Bind(nameof(jwtOptions), jwtOptions);
@@ -95,7 +102,8 @@ namespace itec_mobile_api_final
                 });
             // END JWT
 
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+            services.AddMvc(options => { options.Filters.Add<TeamKeyAuthorizationFilter>(); })
+                .SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
             services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
             services.AddScoped<IIdentityService, IdentityService>();
         }
@@ -122,7 +130,7 @@ namespace itec_mobile_api_final
             app.UseAuthentication();
             app.UseSwagger(options => { options.RouteTemplate = "/swagger/{documentName}/swagger.json"; });
             app.UseSwaggerUI(c => { c.SwaggerEndpoint("/swagger/v1/swagger.json", "post API V1"); });
-            
+
             app.UseMvc();
         }
     }
