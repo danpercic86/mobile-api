@@ -9,11 +9,15 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Swashbuckle.AspNetCore.Annotations;
 
 namespace itec_mobile_api_final.Controllers
 {
     [Route("api/Auth")]
     [ApiController]
+    [SwaggerTag("JWT-based authentication. After logging in, a token is received from the API. " +
+                "You will need to provide this token for every subsequent request, in the Authorization header " +
+                "(as 'bearer {token}' - don't forget the prefix!).")]
     public class IdentityController : Controller
     {
         private readonly IIdentityService _identityService;
@@ -26,12 +30,13 @@ namespace itec_mobile_api_final.Controllers
         }
 
         /// <summary>
-        /// Register a new account.
+        /// The user will receive a link by email, which will need to be opened and handled in-app.
         /// </summary>
         /// <param name="request">User data</param>
         /// <returns></returns>
         [HttpPost("Register")]
         [AllowAnonymous]
+        [ProducesResponseType(typeof(BadRequestResult), 400)]
         public async Task<IActionResult> Register([FromBody] UserRegistrationRequest request)
         {
             if (!ModelState.IsValid)
@@ -65,6 +70,7 @@ namespace itec_mobile_api_final.Controllers
         /// <returns></returns>
         [HttpPost("Login")]
         [AllowAnonymous]
+        [ProducesResponseType(typeof(BadRequestResult), 400)]
         public async Task<IActionResult> Login([FromBody] UserLoginRequest request)
         {
             var authResponse = await _identityService.LoginAsync(request.Email, request.Password);
@@ -106,6 +112,7 @@ namespace itec_mobile_api_final.Controllers
         /// <returns></returns>
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [HttpPost("Update")]
+        [ProducesResponseType(typeof(BadRequestResult), 400)]
         public async Task<IActionResult> Update([FromBody] UserUpdateRequest request)
         {
             var user = await HttpContext.GetCurrentUserAsync(_userManager);

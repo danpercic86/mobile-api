@@ -71,6 +71,7 @@ namespace itec_mobile_api_final
                 });
 
                 c.AddSecurityRequirement(security);
+                
                 var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
                 var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
                 c.IncludeXmlComments(xmlPath);
@@ -118,7 +119,7 @@ namespace itec_mobile_api_final
             }
             else
             {
-                app.UseExceptionHandler("/Home/Error");
+               // app.UseExceptionHandler("/Home/Error");
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }

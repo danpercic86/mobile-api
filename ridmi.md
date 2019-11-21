@@ -1,10 +1,10 @@
 # Ridmi iTEC API
 
-Setup:<br>
-    1. Create a database. <br>
-    2. Modify conf.vars.local<br>
-    3. Set environment variablea: `set-env-var.bat` for windows, and `./set-env-var.sh` (don't forget to change execution mode)<br>
-    4. Run `dotnet ef database update`<br>
-    5. Run `run.bat` for windows and `./run.sh` for linux (again, chmod X run.sh)<br>
-    
+###Setup:
+ * Create a database.
+ * Modify conf.vars.local
+ * Set environment variables: `set-env-var.bat` for windows, and `./set-env-var.sh` (don't forget to change execution mode)
+ * Run `dotnet ef database update`
+ * Run `run.bat` for windows and `./run.sh` for linux (again, chmod -x run.sh)
+ * Swagger can be found at `localhost:5000/docs`
 ### Happy coding!

@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using itec_mobile_api_final.Data;
@@ -15,6 +16,7 @@ namespace itec_mobile_api_final.Cars
     [ApiController]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     [Produces("application/json")]
+    [ProducesResponseType(typeof(UnauthorizedResult), 401)]
     public class CarsController : Controller
     {
         private readonly IRepository<CarEntity> _carRepository;
@@ -28,6 +30,8 @@ namespace itec_mobile_api_final.Cars
         /// List all cars owned by user.
         /// </summary>
         [HttpGet]
+        [ProducesResponseType(typeof(IEnumerable<CarEntity>), 200)]
+        [ProducesResponseType(typeof(NotFoundResult), 404)]
         public async Task<IActionResult> GetAll()
         {
             var userId = HttpContext.GetCurrentUserId();
@@ -45,6 +49,8 @@ namespace itec_mobile_api_final.Cars
         /// <param name="id">Car id</param>
         /// <returns></returns>
         [HttpGet("{id}")]
+        [ProducesResponseType(typeof(CarEntity), 200)]
+        [ProducesResponseType(typeof(NotFoundResult), 404)]
         public async Task<IActionResult> GetOne([FromRoute] string id)
         {
             var userId = HttpContext.GetCurrentUserId();
@@ -60,6 +66,7 @@ namespace itec_mobile_api_final.Cars
         /// Add a car. User will be owner.
         /// </summary>
         [HttpPost]
+        [ProducesResponseType(typeof(CarEntity), 200)]
         public async Task<IActionResult> Post([FromBody] CarEntity car)
         {
             var userId = HttpContext.GetCurrentUserId();
@@ -69,7 +76,9 @@ namespace itec_mobile_api_final.Cars
             car.Id = Guid.NewGuid().ToString();
             
             await _carRepository.AddAsync(car);
-            return CreatedAtAction(nameof(GetOne), new {id = car.Id}, car);
+            var created = await _carRepository.GetAsync(car.Id);
+            
+            return Ok(created);
         }
 
         /// <summary>
@@ -79,6 +88,8 @@ namespace itec_mobile_api_final.Cars
         /// <param name="id">Car id</param>
         /// <returns></returns>
         [HttpPatch("{id}")]
+        [ProducesResponseType(typeof(CarEntity), 200)]
+        [ProducesResponseType(typeof(NotFoundResult), 404)]
         public async Task<IActionResult> Patch([FromBody] dynamic car1, [FromRoute] string id)
         {
             var userId = HttpContext.GetCurrentUserId();
@@ -99,6 +110,7 @@ namespace itec_mobile_api_final.Cars
         /// <param name="id">Car id</param>
         /// <returns></returns>
         [HttpDelete("{id}")]
+        [ProducesResponseType(typeof(NotFoundResult), 404)]
         public async Task<IActionResult> Delete([FromRoute] string id)
         {
             var userId = HttpContext.GetCurrentUserId();
