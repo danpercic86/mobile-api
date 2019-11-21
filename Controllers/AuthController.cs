@@ -18,12 +18,12 @@ namespace itec_mobile_api_final.Controllers
     [SwaggerTag("JWT-based authentication. After logging in, a token is received from the API. " +
                 "You will need to provide this token for every subsequent request, in the Authorization header " +
                 "(as 'bearer {token}' - don't forget the prefix!).")]
-    public class IdentityController : Controller
+    public class AuthController : Controller
     {
         private readonly IIdentityService _identityService;
         private readonly UserManager<User> _userManager;
 
-        public IdentityController(IIdentityService identityService, UserManager<User> userManager)
+        public AuthController(IIdentityService identityService, UserManager<User> userManager)
         {
             _identityService = identityService;
             _userManager = userManager;
