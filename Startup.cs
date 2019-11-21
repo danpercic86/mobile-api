@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Reflection;
 using System.Text;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -17,6 +19,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using Swashbuckle.AspNetCore.Swagger;
+using Swashbuckle.AspNetCore.SwaggerGen;
 
 namespace itec_mobile_api_final
 {
@@ -38,7 +41,6 @@ namespace itec_mobile_api_final
                 $"database={EnvVarManager.GetOrThrow("DB_DATABASE")};" +
                 $"uid={EnvVarManager.GetOrThrow("DB_USER")};" +
                 $"password={EnvVarManager.Get("DB_PASSWORD")}";
-
             services.Configure<CookiePolicyOptions>(options =>
             {
                 // This lambda determines whether user consent for non-essential cookies is needed for a given request.
@@ -53,6 +55,7 @@ namespace itec_mobile_api_final
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new Info {Title = "iTEC Mobile API", Version = "v1.0"});
+
                 c.SchemaFilter<ReadOnlyFilter>();
 
                 c.AddSecurityDefinition("Bearer", new ApiKeyScheme
@@ -71,6 +74,11 @@ namespace itec_mobile_api_final
                     In = "header",
                     Type = "apiKey",
                 });
+                
+                var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+                var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+                c.IncludeXmlComments(xmlPath);
+                c.EnableAnnotations();
 
                 c.OperationFilter<AuthorizationHeaderParameterOperationFilter>();
                 c.OperationFilter<TeamKeyHeaderOperationFilter>();
@@ -118,7 +126,7 @@ namespace itec_mobile_api_final
             }
             else
             {
-                app.UseExceptionHandler("/Home/Error");
+               // app.UseExceptionHandler("/Home/Error");
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
@@ -128,7 +136,15 @@ namespace itec_mobile_api_final
             app.UseCookiePolicy();
 
             app.UseAuthentication();
-            app.UseSwagger(options => { options.RouteTemplate = "/swagger/{documentName}/swagger.json"; });
+            app.UseSwagger(c =>
+            {
+                c.RouteTemplate = "/swagger/{documentName}/swagger.json";
+                c.PreSerializeFilters.Add((swaggerDoc, httpReq) =>
+                {
+                    swaggerDoc.Host = httpReq.Host.Value;
+                    swaggerDoc.Schemes = new List<string>() {httpReq.Scheme};
+                });
+            });
             app.UseSwaggerUI(c => { c.SwaggerEndpoint("/swagger/v1/swagger.json", "post API V1"); });
 
             app.UseMvc();

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using itec_mobile_api_final.Data;
@@ -8,6 +9,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Swashbuckle.AspNetCore.Annotations;
 
 namespace itec_mobile_api_final.Stations
 {
@@ -15,7 +17,14 @@ namespace itec_mobile_api_final.Stations
     [ApiController]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     [Produces("application/json")]
-
+    [ProducesResponseType(typeof(UnauthorizedResult), 401)]
+    [SwaggerTag("To prevent incorrect information, each station entity has user upvotes and downvotes." + 
+        "Each user can vote once on a station, saying whether the information is valid or not. " +
+                "You get to decide how to interpret and display this information " +
+                "(e.g. require a minimum number of upvotes or a minimum total score to consider the station valid)." +
+                "When editing or deleting a station, a new entity will be created, with a reference to the old entity." +
+                "This new entity will have no votes and will need to be validated again.A station's edit history can be" +
+                " reconstructed by following the previous version references.")]
     public class StationsController : Controller
     {
         private readonly IRepository<StationEntity> _stationRepo;
@@ -27,11 +36,16 @@ namespace itec_mobile_api_final.Stations
             _voteRepo = context.GetRepository<VoteEntity>();
         }
 
+        /// <summary>
+        /// List all stations.
+        /// </summary>
         [HttpGet]
+        [ProducesResponseType(typeof(IEnumerable<StationEntity>), 200)]
+        [ProducesResponseType(typeof(NotFoundResult), 404)]
         public async Task<IActionResult> GetAll()
         {
             var userId = HttpContext.GetCurrentUserId();
-            if (userId == null) return Unauthorized();
+            if (userId is null) return Unauthorized();
 
             var stations = await _stationRepo.Queryable.Where(s => s.Deleted == false && s.Old == false).ToListAsync();
             if (!stations.Any()) return NotFound();
@@ -39,15 +53,22 @@ namespace itec_mobile_api_final.Stations
             return Ok(stations);
         }
 
+        /// <summary>
+        /// Get station details.
+        /// </summary>
+        /// <param name="id">Station id</param>
+        /// <returns></returns>
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetOne([FromRoute]string id)
+        [ProducesResponseType(typeof(StationEntity), 200)]
+        [ProducesResponseType(typeof(NotFoundResult), 404)]
+        public async Task<IActionResult> GetOne([FromRoute] string id)
         {
             var userId = HttpContext.GetCurrentUserId();
-            if (userId == null) return Unauthorized();
+            if (userId is null) return Unauthorized();
 
             var station = await _stationRepo.GetAsync(id);
-            if (station == null) return NotFound();
-            
+            if (station is null) return NotFound();
+
             if (station.Deleted)
             {
                 return Ok(new
@@ -60,28 +81,43 @@ namespace itec_mobile_api_final.Stations
             return Ok(station);
         }
 
+        /// <summary>
+        /// Add a station.
+        /// </summary>
+        /// <param name="station">Station properties</param>
+        /// <returns></returns>
         [HttpPost]
+        [ProducesResponseType(typeof(StationEntity), 200)]
         public async Task<IActionResult> Add([FromBody] StationEntity station)
         {
             var userId = HttpContext.GetCurrentUserId();
-            if (userId == null) return Unauthorized();
+            if (userId is null) return Unauthorized();
 
             station.Id = Guid.NewGuid().ToString();
             station.UserId = userId;
 
             await _stationRepo.AddAsync(station);
+            var created = await _stationRepo.GetAsync(station.Id);
 
-            return CreatedAtAction(nameof(GetOne), new {id = station.Id}, station);
+            return Ok(created);
         }
 
+        /// <summary>
+        /// A new station entity will be created with the updated field values. The new entity will be returned.
+        /// </summary>
+        /// <param name="stationEntity">Station properties</param>
+        /// <param name="id">Station id</param>
+        /// <returns></returns>
         [HttpPost("{id}/Edit")]
+        [ProducesResponseType(typeof(StationEntity), 200)]
+        [ProducesResponseType(typeof(NotFoundResult), 404)]
         public async Task<IActionResult> Edit([FromBody] StationEntity stationEntity, [FromRoute] string id)
         {
             var userId = HttpContext.GetCurrentUserId();
-            if (userId == null) return Unauthorized();
+            if (userId is null) return Unauthorized();
 
             var existing = await _stationRepo.GetAsync(id);
-            if (existing == null) return NotFound();
+            if (existing is null) return NotFound();
 
             stationEntity.Id = Guid.NewGuid().ToString();
             stationEntity.OldStationId = existing.Id;
@@ -89,18 +125,26 @@ namespace itec_mobile_api_final.Stations
             existing.Old = true;
 
             await _stationRepo.AddAsync(stationEntity);
-
-            return Ok(stationEntity);
+            var edited = await _stationRepo.GetAsync(stationEntity.Id);
+            
+            return Ok(edited);
         }
 
+        /// <summary>
+        /// A new station entity will be created with the deleted flag set, and all other fields set to the old station's values. The new entity will be returned.
+        /// </summary>
+        /// <param name="id">Station id</param>
+        /// <returns></returns>
         [HttpPost("{id}/Delete")]
-        public async Task<IActionResult> Delete(string id)
+        [ProducesResponseType(typeof(StationEntity), 200)]
+        [ProducesResponseType(typeof(NotFoundResult), 404)]
+        public async Task<IActionResult> Delete([FromRoute] string id)
         {
             var userId = HttpContext.GetCurrentUserId();
-            if (userId == null) return Unauthorized();
+            if (userId is null) return Unauthorized();
 
             var existing = await _stationRepo.GetAsync(id);
-            if (existing == null || existing.Deleted || existing.Old) return NotFound();
+            if (existing is null || existing.Deleted || existing.Old) return NotFound();
 
             var newStation = new StationEntity
             {
@@ -115,13 +159,21 @@ namespace itec_mobile_api_final.Stations
                 Deleted = true,
             };
             existing.Old = true;
-            
-            await _stationRepo.AddAsync(newStation);
 
+            await _stationRepo.AddAsync(newStation);
+       
             return Ok(newStation);
         }
 
+        /// <summary>
+        /// Update the station's free sockets count. 0 ≤ value ≤ capacity.This update doesn't require validation from other users.
+        /// </summary>
+        /// <param name="id">Station id</param>
+        /// <param name="freeSocketsValue">Number of free sockets</param>
+        /// <returns></returns>
         [HttpPut("{id}/FreeSockets")]
+        [ProducesResponseType(typeof(StationEntity), 200)]
+        [ProducesResponseType(typeof(NotFoundResult), 404)]
         public async Task<IActionResult> UpdateSockets([FromRoute] string id, int freeSocketsValue)
         {
             var userId = HttpContext.GetCurrentUserId();
@@ -137,8 +189,15 @@ namespace itec_mobile_api_final.Stations
             return Ok(existing);
         }
 
+        /// <summary>
+        /// Get the station's upvotes and downvotes.
+        /// </summary>
+        /// <param name="id">Station id</param>
+        /// <returns></returns>
         [HttpGet("{id}/Votes")]
-        public async Task<IActionResult> GetAllVotes([FromRoute]string id)
+        [ProducesResponseType(typeof(VoteEntity), 200)]
+        [ProducesResponseType(typeof(NotFoundResult), 404)]
+        public async Task<IActionResult> GetAllVotes([FromRoute] string id)
         {
             var userId = HttpContext.GetCurrentUserId();
             if (userId == null) return Unauthorized();
@@ -149,7 +208,14 @@ namespace itec_mobile_api_final.Stations
             return Ok(votes);
         }
 
+        /// <summary>
+        /// Get the current user's vote.
+        /// </summary>
+        /// <param name="id">Station id</param>
+        /// <returns></returns>
         [HttpGet("{id}/Vote")]
+        [ProducesResponseType(typeof(VoteEntity), 200)]
+        [ProducesResponseType(typeof(NotFoundResult), 404)]
         public async Task<IActionResult> GetUserVote(string id)
         {
             var userId = HttpContext.GetCurrentUserId();
@@ -161,14 +227,25 @@ namespace itec_mobile_api_final.Stations
             return Ok(vote);
         }
 
+        /// <summary>
+        /// Update the current user's vote. The value can be 0 (downvote), null (no vote) or 1 (upvote).
+        /// </summary>
+        /// <param name="id">Station id</param>
+        /// <param name="newVote">Vote value</param>
+        /// <returns></returns>
         [HttpPut("{id}/Vote")]
+        [ProducesResponseType(typeof(VoteEntity), 200)]
+        [ProducesResponseType(typeof(NotFoundResult), 404)]
         public async Task<IActionResult> UpdateVote([FromRoute] string id, bool? newVote)
         {
             var userId = HttpContext.GetCurrentUserId();
             if (userId == null) return Unauthorized();
 
+            var existing = await _stationRepo.GetAsync(id);
+            if (existing is null) return NotFound();
+
             var vote = default(VoteEntity);
-            
+
             var allAsync = await _voteRepo.GetAllAsync();
             if (!allAsync.Any())
             {
@@ -178,7 +255,7 @@ namespace itec_mobile_api_final.Stations
 
                 return Ok(vote);
             }
-            
+
             vote = await allAsync.FirstOrDefaultAsync(a => a.StationId == id && a.UserId == userId);
             if (vote is null)
             {
@@ -190,7 +267,7 @@ namespace itec_mobile_api_final.Stations
             }
 
             vote.Vote = newVote;
-            await  _voteRepo.UpdateAsync(vote);
+            await _voteRepo.UpdateAsync(vote);
 
             return Ok(vote);
         }

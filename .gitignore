@@ -3,5 +3,4 @@ obj/
 /packages/
 .idea/
 .vscode
-conf.vars.local
 global.json

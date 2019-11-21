@@ -13,7 +13,7 @@ namespace itec_mobile_api_final.Forum
     [ApiController]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     [Produces("application/json")]
-
+    [ProducesResponseType(typeof(UnauthorizedResult), 401)]
     public class MessagesController: Controller
     {
         private readonly IRepository<MessageEntity> _messagesRepository;
@@ -23,14 +23,45 @@ namespace itec_mobile_api_final.Forum
             _messagesRepository = context.GetRepository<MessageEntity>();
         }
 
+        /// <summary>
+        /// Get a message details
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [HttpGet("{id}")]
+        [ProducesResponseType(typeof(MessageEntity), 200)]
+        [ProducesResponseType(typeof(NotFoundResult), 404)]
+        [ProducesResponseType(typeof(ForbidResult), 403)]
+        public async Task<IActionResult> GetOne([FromRoute] string id)
+        {
+            var userId = HttpContext.GetCurrentUserId();
+            if (userId is null) return Unauthorized();
+
+            var existing = await _messagesRepository.GetAsync(id);
+            if (existing is null) return NotFound();
+            if (existing.UserId != userId) return Forbid();
+            
+            return Ok(existing);
+        }
+        
+        /// <summary>
+        /// Update a message. User must be owner.
+        /// </summary>
+        /// <param name="message">Message properties</param>
+        /// <param name="id">Message id</param>
+        /// <returns></returns>
         [HttpPatch("{id}")]
+        [ProducesResponseType(typeof(MessageEntity), 200)]
+        [ProducesResponseType(typeof(NotFoundResult), 404)]
+        [ProducesResponseType(typeof(ForbidResult), 403)]
         public async Task<IActionResult> Update([FromBody] dynamic message ,[FromRoute] string id)
         {
             var userId = HttpContext.GetCurrentUserId();
             if (userId is null) return Unauthorized();
 
             var existing = await _messagesRepository.GetAsync(id);
-            if (existing is null || existing.UserId != userId) return NotFound();
+            if (existing is null) return NotFound();
+            if (existing.UserId != userId) return Forbid();
 
             existing = ReflectionHelper.PatchObject(existing, message);
             existing.LastEdited = DateTime.Now;
@@ -39,14 +70,22 @@ namespace itec_mobile_api_final.Forum
             return Ok(existing);
         }
 
+        /// <summary>
+        /// Delete a message. User must be owner.
+        /// </summary>
+        /// <param name="id">Message id</param>
+        /// <returns></returns>
         [HttpDelete("{id}")]
+        [ProducesResponseType(typeof(NotFoundResult), 404)]
+        [ProducesResponseType(typeof(ForbidResult), 403)]
         public async Task<IActionResult> Delete([FromRoute] string id)
         {
             var userId = HttpContext.GetCurrentUserId();
             if (userId is null) return Unauthorized();
 
             var existing = await _messagesRepository.GetAsync(id);
-            if (existing is null || existing.UserId != userId) return NotFound();
+            if (existing is null) return NotFound();
+            if (existing.UserId != userId) return Forbid();
 
             await _messagesRepository.DeleteAsync(existing);
             return Ok("Message deleted!");
