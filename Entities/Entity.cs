@@ -10,7 +10,6 @@ namespace itec_mobile_api_final.Entities
     {
         [Key]
         [ReadOnly(true)] public string Id { get; set; }
-        [JsonIgnore]
-        public bool Deleted { get; set; }
+        
     }
 }

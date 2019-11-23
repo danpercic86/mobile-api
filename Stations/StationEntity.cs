@@ -13,9 +13,10 @@ namespace itec_mobile_api_final.Stations
         public int TotalSockets { get; set; }
         public int FreeSockets { get; set; }
         public PointF Location { get; set; }
-        
-        [JsonIgnore]
+        [ReadOnly(true)]
         public bool Old { get; set; }
+        [ReadOnly(true)]
+        public bool Deleted { get; set; }
         
         [ReadOnly(true)]
         public string UserId { get; set; }
